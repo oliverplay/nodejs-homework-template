@@ -31,15 +31,22 @@ const getContactById = async (contactId) => {
 
 const removeContact = async (contactId) => {
   try {
-   const data = await fs.readFile(contactsPath);
+    const data = await fs.readFile(contactsPath);
    const jsonDate = JSON.parse(data);
-   const findUser = jsonDate.find(item => item.id !== contactId)
-    await fs.writeFile(contactsPath, JSON.stringify(findUser))
-    return {findUser}
+   const findUser = jsonDate.find(item => item.id === contactId)
+           if (!findUser) {
+      const message = `Not Found`;
+      return { message };
+           } else {
+        const newList = jsonDate.filter(item => item.id !== contactId)
+        await fs.writeFile(contactsPath, JSON.stringify(newList))     
+         const message = `contact deleted`;    
+         return { message };    
+    }
   } catch (error) {
     return { error }
   }
-  
+
 }
 
 const addContact = async (body) => {
