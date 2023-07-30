@@ -50,12 +50,47 @@ const removeContact = async (contactId) => {
 }
 
 const addContact = async (body) => {
+  try {
+const data = await fs.readFile(contactsPath) 
+  const jsonDate = JSON.parse(data)
+  jsonDate.push(body)
+    await fs.writeFile(contactsPath, JSON.stringify(jsonDate))
+    const addedContact = body
+  return { addedContact };  
+    }
+   catch (error) {
+    return { error }
+  }
+}
+
+const updateContact = async (contactId, body) => {
+  const {name, email, phone} = body
+  try {
+  const data = await fs.readFile(contactsPath) 
+    const jsonDate = JSON.parse(data)
+
+    const findUser = jsonDate.findIndex(item => item.id === contactId)
+           if (findUser === -1) {
+      const message = `Not Found`;
+      return { message };
+           } else {
+             jsonDate[findUser] = { ...jsonDate[findUser], name, email, phone }
+        
+             await fs.writeFile(contactsPath, JSON.stringify(jsonDate))
+    const updateContact = jsonDate[findUser]
+  return { updateContact };  
+    }
+    
+  }
+  catch (error) {
+    return { error }
+  }
+
+
 
 
 
 }
-
-const updateContact = async (contactId, body) => {}
 
 module.exports = {
   listContacts,
