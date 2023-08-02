@@ -4,13 +4,13 @@ const {
   addContact,
   removeContact,
   updateContact,
-} = require('../../models/contacts');
-const Joi = require('joi');
+} = require('../../models/contacts.js');
+// const Joi = require('joi');
 const express = require('express');
 const router = express.Router();
-const schema = require('../../models/contacts-schema');
+const schema = require('../../models/contacts-schema.js');
 
-router.get('/', async (req, res, next) => {
+router.get('/', async (req, res) => {
   const contacts = await listContacts();
   res.json(contacts);
 });
@@ -25,7 +25,7 @@ router.get('/:contactId', async (req, res) => {
   res.json(contact);
 });
 
-router.post('/', async (req, res, next) => {
+router.post('/', async (req, res) => {
   const newContact = {
     name: req.body.name,
     phone: req.body.phone,
@@ -33,35 +33,9 @@ router.post('/', async (req, res, next) => {
   };
   const validate = schema.validate(newContact);
   if (validate.error) {
-    const validateMissing = () => {
-      const key = Object.keys(
-        validate.error._original
-      ).find(key => {
-        return validate.error._original[key] === undefined;
-      });
-      if (key) {
-        return true;
-      }
-      return false;
-    };
-    const isMissing = validateMissing();
-
-    if (isMissing) {
-      const missingKeys = [];
-      Object.keys(validate.error._original).forEach(key => {
-        if (!validate.error._original[key]) {
-          missingKeys.push(key);
-        }
-      });
-      const message =
-        'Required fields missing: ' +
-        missingKeys.join(', ');
-      res.status(400).json({ message: message });
-    } else {
-      res
-        .status(400)
-        .json({ message: validate.error.message });
-    }
+    res
+      .status(400)
+      .json({ message: validate.error.message });
   } else {
     const addedContact = await addContact(newContact);
     res.json(addedContact);
@@ -86,35 +60,9 @@ router.put('/:contactId', async (req, res, next) => {
   };
   const validate = schema.validate(newContact);
   if (validate.error) {
-    const validateMissing = () => {
-      const key = Object.keys(
-        validate.error._original
-      ).find(key => {
-        return validate.error._original[key] === undefined;
-      });
-      if (key) {
-        return true;
-      }
-      return false;
-    };
-    const isMissing = validateMissing();
-
-    if (isMissing) {
-      const missingKeys = [];
-      Object.keys(validate.error._original).forEach(key => {
-        if (!validate.error._original[key]) {
-          missingKeys.push(key);
-        }
-      });
-      const message =
-        'Required fields missing: ' +
-        missingKeys.join(', ');
-      res.status(400).json({ message: message });
-    } else {
-      res
-        .status(400)
-        .json({ message: validate.error.message });
-    }
+    res
+      .status(400)
+      .json({ message: validate.error.message });
   } else {
     const updatedContact = await updateContact(
       req.params.contactId,
