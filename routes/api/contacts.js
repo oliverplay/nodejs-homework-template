@@ -5,7 +5,6 @@ const {
   removeContact,
   updateContact,
 } = require('../../models/contacts.js');
-// const Joi = require('joi');
 const express = require('express');
 const router = express.Router();
 const schema = require('../../models/contacts-schema.js');
@@ -28,8 +27,8 @@ router.get('/:contactId', async (req, res) => {
 router.post('/', async (req, res) => {
   const newContact = {
     name: req.body.name,
-    phone: req.body.phone,
     email: req.body.email,
+    phone: req.body.phone,
   };
   const validate = schema.validate(newContact);
   if (validate.error) {
