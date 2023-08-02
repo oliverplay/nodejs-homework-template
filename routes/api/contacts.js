@@ -58,7 +58,7 @@ router.put('/:contactId', async (req, res) => {
       req.body
     );
     if (result) {
-      res.json(result);
+      res.status(200).json(result);
     } else {
       res
         .status(404)
