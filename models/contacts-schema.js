@@ -13,7 +13,6 @@ const schema = Joi.object({
     'string.base': `"email" should be a type of 'string'`,
     'any.required': `"email" is a required field`,
   }),
-  favorite: Joi.boolean(),
 });
 
 module.exports = schema;

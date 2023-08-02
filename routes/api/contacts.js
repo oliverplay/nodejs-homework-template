@@ -6,7 +6,9 @@ const {
   updateContact,
 } = require('../../models/contacts.js');
 const express = require('express');
+
 const router = express.Router();
+
 const schema = require('../../models/contacts-schema.js');
 
 router.get('/', async (req, res) => {
