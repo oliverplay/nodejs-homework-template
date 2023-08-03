@@ -2,8 +2,6 @@ const fs = require('fs').promises;
 const path = require('node:path');
 const { nanoid } = require('nanoid');
 
-console.log(__dirname);
-
 const contactsPath = path.join(__dirname, 'contacts.json');
 
 const updateContacts = async contacts =>
