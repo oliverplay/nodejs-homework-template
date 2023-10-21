@@ -23,8 +23,8 @@ router.get('/', async (req, res, next) => {
 
 router.get('/:contactId', async (req, res, next) => {
   const {contactId} = req.params;
-  const result = await getContactById()
-  if(!contact){
+  const result = await getContactById(contactId)
+  if(!result){
     res.status(400).json({message: "contact not found"})
   }
   res.json({
@@ -35,7 +35,7 @@ router.get('/:contactId', async (req, res, next) => {
 })
 
 router.post('/', async (req, res, next) => {
-  const result = await addContact(body);
+  const result = await addContact(req.body);
   if(!result){
     res.json({
       status: "Not Found",
@@ -52,7 +52,7 @@ router.post('/', async (req, res, next) => {
 
 router.delete('/:contactId', async (req, res, next) => {
   const {contactId} = req.params;
-  const result = await removeContact();
+  const result = await removeContact(contactId);
   if(!result){
     res.json({
       code: 404,

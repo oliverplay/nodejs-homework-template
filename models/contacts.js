@@ -1,6 +1,7 @@
 const fs = require('fs/promises')
 const path = require("path");
 const filePath = path.join(__dirname, "contacts.json");
+const {v4} = require('uuid')
 
 const listContacts = async () => {
   const data = await fs.readFile(filePath);
@@ -9,21 +10,34 @@ const listContacts = async () => {
 }
 
 const getContactById = async (contactId) => {
-  const contact = contacts.filter(contact => contact.id === contactId);
+  const contacts = await listContacts(); 
+  const contact = contacts.filter(({ id }) => id === contactId);
+  if (!contact) {
+    return null;
+  }
   return contact;
-}
+};
 
 const removeContact = async (contactId) => {
   const contacts = await listContacts();
-  const contact = contacts.filter(el => el.id !== contactId);
-  contacts = [...contact];
+  const index = contacts.findIndex((contact) => contact.id === contactId.toString());
+
+    // If the contact with the given contactId is not found, return null.
+  if (index === -1){
+    return null;
+  }
+
+  // Use splice to remove the contact at the found index (index), and capture it in 'removedContact'.
+  const [removedContact] = contacts.splice(index, 1);
   await fs.writeFile(filePath, JSON.stringify(contacts))
+
+  return removedContact;
 
 }
 
 const addContact = async (body) => {
   const contacts = await listContacts();
-  const {name, email, phone} = req.body;
+  const {name, email, phone} = body;
   const newContact = {
     id: v4(),
     name,
@@ -32,6 +46,7 @@ const addContact = async (body) => {
   };
   contacts.push(newContact);
   await fs.writeFile(filePath, JSON.stringify(contacts));
+  return newContact
 
 }
 
