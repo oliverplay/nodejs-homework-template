@@ -2,10 +2,10 @@ const ctrlWrapper = require("../helpers/ctrlWrapper.js");
 const HttpError = require("../helpers/HttpError.js");
 const contacts = require("../models/contacts.js");
 
-const getAll = async (req, res) => {
-  const result = await contacts.listContacts();
-  res.json(result);
-};
+// const getAll = async (req, res) => {
+//   const result = await contacts.listContacts();
+//   res.json(result);
+// };
 
 const getById = async (req, res) => {
   const id = req.params.contactId;

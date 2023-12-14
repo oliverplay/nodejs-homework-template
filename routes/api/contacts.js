@@ -1,5 +1,4 @@
 const express = require("express");
-const contactSchema = require("../../schemas/contact");
 const ctrl = require("../../controllers/contacts");
 
 const validateContact = require("../../middlewares/validateContact");
