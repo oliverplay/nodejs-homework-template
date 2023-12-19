@@ -1,6 +1,6 @@
 // const fs = require('fs/promises')
-const { Schema, module } = require("mongoose");
-const { handleMongooseError } = require("../helpers/handleMongooseError");
+const { Schema, model } = require("mongoose");
+const { handleMongooseError } = require("../helpers");
 const Joi = require("joi");
 const contactSchema = new Schema(
   {
@@ -30,11 +30,18 @@ const addSchema = Joi.object({
   favorite: Joi.boolean(),
 });
 
+const updateSchema = Joi.object({
+  name: Joi.string(),
+  email: Joi.string(),
+  phone: Joi.string(),
+  favorite: Joi.boolean(),
+});
+
 const updateFavoriteSchema = Joi.object({ favorite: Joi.boolean().required() });
 
-const schemas = { addSchema, updateFavoriteSchema };
+const schemas = { addSchema, updateFavoriteSchema, updateSchema };
 
-const Contact = model("contact", contactSchema);
+const Contact = model("Contact", contactSchema);
 
 module.exports = {
   schemas,
