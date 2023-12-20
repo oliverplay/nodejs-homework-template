@@ -30,16 +30,13 @@ const addSchema = Joi.object({
   favorite: Joi.boolean(),
 });
 
-const updateSchema = Joi.object({
-  name: Joi.string(),
-  email: Joi.string(),
-  phone: Joi.string(),
-  favorite: Joi.boolean(),
+const updateFavoriteSchema = joi.object({
+  favorite: joi.boolean().required().messages({
+    "any.required": "missing field favorite",
+  }),
 });
 
-const updateFavoriteSchema = Joi.object({ favorite: Joi.boolean().required() });
-
-const schemas = { addSchema, updateFavoriteSchema, updateSchema };
+const schemas = { addSchema, updateFavoriteSchema };
 
 const Contact = model("Contact", contactSchema);
 
