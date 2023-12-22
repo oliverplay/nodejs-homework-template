@@ -15,19 +15,15 @@ exports.getAllContacts = catchAsync(async(req, res) =>{
 
 exports.getById = catchAsync(async(req, res)=>{
     const {id} = req.params;
-    const conatct = await getContactById(id)
-    if(!conatct){
-        throw new HttpError(400, 'Invalid id')
-    }
-    res.status(200).json(conatct)
+    const contact = await getContactById(id)
+    if(!contact) throw new HttpError(400, 'Not found')
+    res.status(200).json(contact)
 })
 
 exports.deleteContact = catchAsync(async (req, res)=>{
     const {id} = req.params;
     const deletedContact = await removeContact(id);
-    if(!deletedContact){
-        throw new HttpError(400, 'Invalid user')
-    }
+    if(!deletedContact) throw new HttpError(404, 'Not found')
     res.status(200).json({message: 'Contact was deleted!'})
 })
 

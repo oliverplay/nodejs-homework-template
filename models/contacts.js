@@ -1,6 +1,6 @@
-const fs = require('fs/promises')
+const fs = require('fs').promises;
 const path = require("path");
-const uuid = require("uuid")
+const uuid = require("uuid");
 
 const contactsPath = path.join(__dirname, "./contacts.json");
 
@@ -12,20 +12,22 @@ const listContacts = async () => {
 
 const getContactById = async (contactId) => {
   const contacts = await listContacts();
-  const contact = contacts.find(({id}) => id === contactId)
+  const contact = contacts.find(({id}) => id === String(contactId))
   return contact || null
 }
 
 const removeContact = async (contactId) => {
   const contacts = await listContacts();
-  const index = contacts.findIndex(({id}) => id === contactId)
-  if(contactId === -1){
+  const contactIdSrt = String(contactId);
+  const index = contacts.findIndex(({id}) => id === contactIdSrt)
+  if(index === -1){
     return null
   }
   const deletedContact = contacts.splice(index, 1)
   await fs.writeFile(contactsPath, JSON.stringify(contacts, null, 2));
   return deletedContact
 }
+
 
 const addContact = async (body) => {
   const contacts = await listContacts();
@@ -41,8 +43,7 @@ const addContact = async (body) => {
 
 const updateContact = async (contactId, body) => {
   const contacts = await listContacts();
-  const contactToUpdate = getContactById(contactId)
-  const contactIndex = contactToUpdate.id
+  const contactIndex = contacts.findIndex((contact) => contact.id === contactId);
   if (contactIndex === -1){
     return null
   }
