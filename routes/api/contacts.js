@@ -6,17 +6,20 @@ const {
   postContact,
   putContact} = require('../../controllers')
 
+const {validation} = require('../../utilities')
+const {validateBody} = require("../../middleware")
+
 const router = express.Router()
 
 router.get('/', getAllContacts)
 
 router.get('/:contactId', getById)
 
-router.post('/',postContact)
+router.post('/', validateBody(validation), postContact)
 
 router.delete('/:contactId', deleteContact)
 
-router.put('/:contactId',putContact)
+router.put('/:contactId', validateBody(validation), putContact)
 
 module.exports = router
 

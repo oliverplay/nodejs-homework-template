@@ -6,7 +6,7 @@ const {
     updateContact,
   } = require("../models/contacts");
 
-  const {catchAsync, HttpError, UserDataValidators} = require('../utilities')
+  const {catchAsync, HttpError} = require('../utilities')
 
 exports.getAllContacts = catchAsync(async(req, res) =>{
     const allContacts = await listContacts();
@@ -28,19 +28,18 @@ exports.deleteContact = catchAsync(async (req, res)=>{
 })
 
 exports.postContact = catchAsync(async(req, res)=>{
-    const data = UserDataValidators.createUserDataValidator(req.body)
-    const newContact = await addContact(data);
+    const newContact = await addContact(req.body);
     res.status(201).json(newContact);
 })
 
 exports.putContact = catchAsync( async (req, res)=>{
-    const data = UserDataValidators.createUserDataValidator(req.body)
-    const {contactId} = data
-    const updatedContact = await updateContact(contactId, data);
+    const {contactId} = req.params
+    const updatedContact = await updateContact(contactId, req.body);
     if(!updateContact){
-        throw new HttpError(400, 'Invalid details')
+        throw new HttpError(400, 'Not found')
     }
-    res.status(201).json(updatedContact);
+    res.status(200).json(updatedContact);
 
 })
 
+  

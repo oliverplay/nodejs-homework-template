@@ -1,8 +1,8 @@
 const catchAsync = require("./catchAsync");
 const HttpError = require("./httpError");
-const UserDataValidators = require("./validator")
+const validation = require("./validation")
 module.exports = {
     catchAsync,
     HttpError,
-    UserDataValidators
+    validation
 }
