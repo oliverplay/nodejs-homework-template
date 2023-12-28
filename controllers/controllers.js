@@ -10,7 +10,7 @@ exports.getAllContacts = catchAsync(async(req, res) =>{
 exports.getById = catchAsync(async(req, res)=>{
     const {contactId} = req.params;
     const contact = await Contact.findById(contactId);
-    if(!contact) throw httpError(400, 'Not found')
+    if(!contact) throw httpError(404, 'Not found')
     res.status(200).json(contact)
 })
 
