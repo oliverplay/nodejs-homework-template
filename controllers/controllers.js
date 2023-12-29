@@ -39,3 +39,4 @@ exports.updateContact = catchAsync( async (req, res)=>{
     res.status(200).json(updatedContact);
 
 })
+
