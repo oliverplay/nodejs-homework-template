@@ -3,11 +3,17 @@ const {getAllContacts,
     deleteContact,
     postContact,
     updateContact} = require("./controllers")
+const {
+    signup,
+    login
+} = require('./authControllers')   
 
 module.exports = {
     getAllContacts,
   getById,
   deleteContact,
   postContact,
-  updateContact
+  updateContact,
+  signup,
+  login
   }

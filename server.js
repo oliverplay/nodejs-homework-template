@@ -1,9 +1,10 @@
 const dotenv = require('dotenv');
-const app = require("./app");
 
 dotenv.config({
   path: process.env.NODE_ENV === 'production' ? './envs/production.env' : './envs/development.env',
 });
+
+const app = require("./app");
 
 const mongoose = require('mongoose');
 const {DB_URL} = process.env;
