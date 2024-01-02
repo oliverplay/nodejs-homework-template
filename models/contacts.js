@@ -23,8 +23,8 @@ const getContactById = async (contactId) => {
 const removeContact = async (contactId) => {
   const contactsList = await listContacts();
   const indx = contactsList.findIndex(el => el.id === contactId);
-  
-  if (indx === -1) throw new HttpError(404, `Contact id='${contactId}' not found`)
+
+  if (indx === -1) throw new HttpError(404, `Not found`)
   
   const result = contactsList.splice(indx, 1);
   await updateContactsFile(contactsList);
@@ -46,7 +46,7 @@ const updateContact = async (contactId, body) => {
   const contactsList = await listContacts();
   const indx = contactsList.findIndex((el) => el.id === contactId);
 
-  if (indx === -1) throw new HttpError(404, `Contact id='${contactId}' not found`)
+  if (indx === -1) throw new HttpError(404, `Not found`)
 
   contactsList[indx] = { ...contactsList[indx], ...body };
   await updateContactsFile(contactsList);

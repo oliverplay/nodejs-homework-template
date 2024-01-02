@@ -23,17 +23,17 @@ const getContactByIdController = catchAsync(async (req, res) => {
     const result = await getContactById(contactId);
     console.log(result)
     if (!result) {
-        res.status(400).json({ error: `Contact id=${contactId} not found` })
+        res.status(404).json({ message: `Not found` })
     }
     res.json(result);
 })
 
 const removeContactController = catchAsync(async (req, res) => {
     const { contactId } = req.params;
-    const result = await removeContact(contactId);
-    if (!result) {
-        res.status(400).json({ error: `Contact id=${contactId} not found` })
-    }
+    await removeContact(contactId);
+    // if (!result) {
+    //     res.status(404).json({ message: `Not found` })
+    // }
     res.json({ message: 'Contact removed' });
 })
 
