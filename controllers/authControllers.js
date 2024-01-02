@@ -36,3 +36,10 @@ exports.login = catchAsync(async (req, res) => {
   });
 });
 
+
+exports.getCurrent = catchAsync(async (req, res) => {
+  const { email, subscription } = await req.user;
+
+  res.json({ email, subscription });
+});
+
