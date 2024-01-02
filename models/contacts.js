@@ -1,45 +1,59 @@
 const fs = require('fs/promises');
 const path = require('path');
+const { nanoid }= require("nanoid");
 
-const getMaxId = (data) => {
-  const idList = data.map(contact => contact.id)
-  return Math.max(...idList) + 1
-}
+const contactPath = path.join(__dirname, "contacts.json")
 
 const listContacts = async () => {
-  const contacts = await fs.readFile(path.join(__dirname, 'contacts.json'))
-  return JSON.parse(contacts)
+  const list = await fs.readFile(path.join(contactPath, "utf-8"));
+  return JSON.parse(list)
 }
 
 const getContactById = async (contactId) => {
-  const contacts = await fs.readFile(path.join(__dirname, 'contacts.json'))
-  return JSON.parse(contacts).filter(contact => contact.id === contactId)
-}
+  const list = await listContacts();
+
+const contact = list.find((item) => item.id === contactId);
+return contact || null;
+};
 
 const removeContact = async (contactId) => {
-  const contacts = await fs.readFile(path.join(__dirname, 'contacts.json'))
-  const parsedContacts = JSON.parse(contacts)
-  parsedContacts = parsedContacts.splice(parsedContacts.findIndex(contact => contact.id === contactId), 1)
-  await fs.writeFile(path.join(__dirname, 'contact.json'), parsedContacts)
-  return parsedContacts
+  const list = await listContacts();
+
+  const index = list.findIndex((item) => item.id === contactId);
+
+  if(index === -1) {
+    return null;
+  }
 }
 
 
 const addContact = async (body) => {
-  const contacts = await fs.readFile(path.join(__dirname, 'contacts.json'))
-  const parsedContacts = JSON.parse(contacts)
-  const id = getMaxId(parsedContacts).toString()
-  parsedContacts.push({id: id, name: body.name, email: body.email, phone: body.phone})
-  await fs.writeFile(path.join(__dirname, 'contacts.json'), parsedContacts)
-  return parsedContacts
+const list = await listContacts();
+
+const newContact = {
+  id: nanoid(),
+  ...body,
+};
+list.push(newContact);
+await fs.writeFile(contactPath, JSON.stringify(list, null, 2));
+
+return newContact;
 }
 
 const updateContact = async (contactId, body) => {
-  const contacts = await fs.readFile(path.join(__dirname, 'contacts.json'))
-  const parsedContacts = JSON.parse(contacts)
-  parsedContacts[parsedContacts.findIndex(contact => contact.id === contactId)] = {id: contactId, name: body.name, email: body.email, phone: body.phone}
-  await fs.writeFile(path.join(__dirname, 'contacts.json'), parsedContacts)
-  return parsedContacts
+ const lisy = await listContacts();
+
+ const index = list.findIndex((item) => item.id === contactId);
+
+ if(index === -1) {
+  return null;
+ }
+
+ list[index] = { id: contactId, ...body};
+
+ await fs.writeFile(contactPath, JSON.stringify(list, null, 2));
+
+ return list[index];
 }
 
 module.exports = {

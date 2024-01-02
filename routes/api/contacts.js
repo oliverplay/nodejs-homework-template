@@ -1,66 +1,24 @@
-const express = require('express');
-const methods = require('../../models/contacts');
-const validation = require('../../validations/validation');
-const {validate} = require('../../validations/validationMiddleware');
+const express = require("express");
+const Joi = require("joi");
+const ctrl = require('../../controllers/contacts');
+const {validateBody} = require("../../middlewares");
 
-const router = express.Router()
+const router = express.Router();
 
-router.get('/', async (req, res, next) => {
-  const contacts = await methods.listContacts()
-  res.json({ status: 'success',
-  code: 200,
-  data: {
-    contacts,
-  }
- }) 
-})
+const addSchema = Joi.object({
+  name: Joi.string().required(),
+  email: Joi.string().required(),
+  phone: Joi.string().required(),
+});
 
-router.get('/:contactId', async (req, res, next) => {
-  const {contactId} = req.params
-  const contacts = await methods.getContactById(contactId)
-  res.json({ 
-    status: 'success',
-    code: 200,
-    data: {
-      contacts,
-    }
-  }) 
-})
+router.get("/", ctrl.getAll);
 
+router.get ("/:contactId", ctrl.getById);
 
-router.post('/', validate(validation.contact), async (req, res, next) => {
-  const body = req.body
-  const contacts = await methods.addContact(body)
-  res.json({  
-    status: 'success',
-  code: 200,
-  data: {
-    contacts,
-  }})
-})
+router.post("/", validateBody(addSchema), ctrl.addContact);
 
-router.delete('/:contactId', async (req, res, next) => {
-  const contact = req.params
-  const contacts = await methods.removeContact(contactId)
-  res.json({ 
-    status: 'success',
-  code: 200,
-  data: {
-    contacts,
-  }
-  })
-})
+router.delete("/:contactId", validateBody(addSchema), ctrl.deleteContact);
 
-router.put('/:contactId', validate(validation.contact), async (req, res, next) => {
-  const { contactId } = req.params
-  const contacts = await methods.updateContact(contactId, req.body)
-  res.json({ 
-    status: 'success',
-    code: 200,
-    data: {
-      contacts,
-    }
-  })
-})
+router.put("/:contactId", validateBody(addSchema), ctrl.updateContact);
 
-module.exports = router
+module.exports = router;
