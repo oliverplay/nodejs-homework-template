@@ -34,21 +34,24 @@ const removeContactController = catchAsync(async (req, res) => {
     if (!result) {
         res.status(400).json({ error: `Contact id=${contactId} not found` })
     }
-    res.json({ message: 'Contact removed'});
+    res.json({ message: 'Contact removed' });
 })
 
 const addContactController = catchAsync(async (req, res) => {
-    // console.log(contactValidators.addContactValidator('{qwe: 1}'))
     const { error } = contactValidators.addContactValidator(req.body);
 
     if (error) throw new HttpError(400, error)
-    console.log(error);
+
     const result = await addContact(req.body);
 
     res.status(201).json(result);
 })
 
 const updateContactController = catchAsync(async (req, res) => {
+    const { error } = contactValidators.updateContactValidator(req.body);
+
+    if (error) throw new HttpError(400, error)
+
     const { contactId } = req.params;
     const result = await updateContact(contactId, req.body)
     res.json(result);
