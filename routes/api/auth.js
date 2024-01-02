@@ -2,7 +2,9 @@ const express = require('express')
 const {
     signup,
     login,
-    getCurrent
+    getCurrent,
+    logout,
+    updateSubscription
 } = require('../../controllers')
 
 const {authValidation} = require('../../utilities')
@@ -12,5 +14,9 @@ const router = express.Router();
 
 router.post('/signup',validateBody(authValidation), signup);
 router.post('/login',validateBody(authValidation), login);
+router.post("/logout", authantication, logout);
 router.get("/current", authantication, getCurrent);
+router.patch("/", authantication, updateSubscription)
+
+
 module.exports = router;

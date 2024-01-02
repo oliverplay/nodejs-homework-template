@@ -43,3 +43,34 @@ exports.getCurrent = catchAsync(async (req, res) => {
   res.json({ email, subscription });
 });
 
+exports.logout = catchAsync(async (req, res) => {
+  const { _id } = await req.user;
+  console.log('User ID:', _id);
+  await User.findByIdAndUpdate(_id, {token: null});
+  res.status(204).json();
+});
+
+exports.updateSubscription = catchAsync(async (req, res) => {
+  const { _id } = await req.user;
+  const { subscription } = await req.body;
+
+  if (
+    subscription !== "starter" &&
+    subscription !== "pro" &&
+    subscription !== "business"
+  ) {
+    throw httpError(400, "Invalid subscription");
+  }
+
+  const updatedUser = await User.findByIdAndUpdate(
+    _id,
+    {subscription},
+    {new: true}
+  );
+
+  if (!updatedUser) {
+    throw httpError(404, "Not found");
+  }
+
+  res.status(201).json('Subscription is updated!');
+});

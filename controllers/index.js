@@ -6,7 +6,9 @@ const {getAllContacts,
 const {
     signup,
     login,
-    getCurrent
+    getCurrent,
+    logout,
+    updateSubscription
 } = require('./authControllers')   
 
 module.exports = {
@@ -17,5 +19,7 @@ module.exports = {
   updateContact,
   signup,
   login,
-  getCurrent
+  getCurrent,
+  logout,
+  updateSubscription
   }
