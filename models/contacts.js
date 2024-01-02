@@ -1,14 +1,61 @@
-// const fs = require('fs/promises')
+const fs = require('fs/promises');
+const { randomUUID } = require('crypto');
+const path = require('path');
 
-const listContacts = async () => {}
+const contactsPath = path.resolve('models', 'contacts.json');
 
-const getContactById = async (contactId) => {}
+const updateContactsFile = (data) => {
+  fs.writeFile(contactsPath, JSON.stringify(data))
+}
 
-const removeContact = async (contactId) => {}
+const listContacts = async () => {
+  const result = await fs.readFile(contactsPath);
+  return JSON.parse(result);
+}
 
-const addContact = async (body) => {}
+const getContactById = async (contactId) => {
+  const contacts = await listContacts();
+  const result = contacts.find(el => el.id === contactId);
+  return result;
+}
 
-const updateContact = async (contactId, body) => {}
+const removeContact = async (contactId) => {
+  const contactsList = await listContacts();
+  const indx = contactsList.findIndex(el => el.id === contactId);
+  if (indx === -1) {
+    console.log(`Contact with id="${contactId}" not found`);
+    return null;
+  }
+  // const [result] = contactsList.splice(indx, 1);
+  const result = contactsList.splice(indx, 1);
+  await updateContactsFile(contactsList);
+  return result;
+}
+
+const addContact = async (newContact) => {
+  const contactsList = await listContacts();
+  const newContactResult = {
+    ...newContact,
+    id: randomUUID(),
+  };
+  contactsList.push(newContactResult);
+  await updateContactsFile(contactsList);
+  return newContactResult;
+}
+
+const updateContact = async (contactId, body) => {
+  const contactsList = await listContacts();
+  const indx = contactsList.findIndex((el) => el.id === contactId);
+
+  if (indx === -1) {
+    console.log(`Contact with id="${contactId}" not found`);
+    return null;
+  }
+
+  contactsList[indx] = { ...contactsList[indx], ...body };
+  await updateContactsFile(contactsList);
+  return contactsList[indx];
+}
 
 module.exports = {
   listContacts,
