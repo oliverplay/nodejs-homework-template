@@ -1,6 +1,6 @@
 const fs = require('fs/promises');
 const path = require('path');
-const { nanoid }= require("nanoid");
+const { uuid } = require('uuidv4');
 
 
 const contactPath = path.join(__dirname, "contacts.json")
@@ -32,7 +32,7 @@ const addContact = async (body) => {
 const list = await listContacts();
 
 const newContact = {
-  id: nanoid(),
+  id: uuid(),
   ...body,
 };
 list.push(newContact);
@@ -42,7 +42,7 @@ return newContact;
 }
 
 const updateContact = async (contactId, body) => {
- const lisy = await listContacts();
+ const list = await listContacts();
 
  const index = list.findIndex((item) => item.id === contactId);
 
