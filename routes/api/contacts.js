@@ -8,20 +8,20 @@ const {
 } = require('../../controllers')
 
 const {bodyValidation, updateFavoriteValidation} = require('../../utilities')
-const {validateBody, isValidId, isEmptyReqBody} = require("../../middleware")
+const {validateBody, isValidId, isEmptyReqBody, authantication} = require("../../middleware")
 
 const router = express.Router()
 
-router.get('/', getAllContacts)
+router.get('/',authantication, getAllContacts)
 
-router.get('/:contactId',isValidId, getById)
+router.get('/:contactId',authantication, isValidId, getById)
 
-router.post('/', validateBody(bodyValidation), postContact)
+router.post('/',authantication, validateBody(bodyValidation), postContact)
 
-router.delete('/:contactId',isValidId, deleteContact)
+router.delete('/:contactId',authantication, isValidId, deleteContact)
 
-router.put('/:contactId',isValidId, isEmptyReqBody, validateBody(bodyValidation), updateContact)
+router.put('/:contactId',authantication, isValidId, isEmptyReqBody, validateBody(bodyValidation), updateContact)
 
-router.patch('/:contactId/favorite',isValidId, validateBody(updateFavoriteValidation), updateContact)
+router.patch('/:contactId/favorite', authantication, isValidId, validateBody(updateFavoriteValidation), updateContact)
 
 module.exports = router
