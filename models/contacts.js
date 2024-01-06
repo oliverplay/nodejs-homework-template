@@ -3,7 +3,7 @@ const path = require('path');
 const { uuid } = require('uuidv4');
 
 
-const contactPath = path.join(__dirname, "contacts.json")
+const contactPath = path.resolve(__dirname, "contacts.json");
 
 const listContacts = async () => {
   const list = await fs.readFile(contactPath, "utf-8");
