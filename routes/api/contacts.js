@@ -20,6 +20,6 @@ router.post("/", validateBody(addSchema), ctrl.addContact);
 
 router.delete("/:contactId", validateBody(addSchema), ctrl.deleteContact);
 
-router.put("/:contactId", ctrl.updateContact);
+router.put("/:contactId", validateBody(addSchema), ctrl.updateContact);
 
 module.exports = router;
