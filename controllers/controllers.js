@@ -3,9 +3,13 @@ const {Contact} = require("../models/contacts")
 const {catchAsync, httpError} = require('../utilities')
 
 exports.getAllContacts = catchAsync(async(req, res) =>{
-    const allContacts = await Contact.find();
+    const { _id: owner } = req.user;
+    const allContacts = await Contact.find({owner}).populate("owner", "email");
     res.status(200).json(allContacts)
 } )
+
+// const contacts = await Contact.find(query).populate("owner", "email");
+// return contacts;
 
 exports.getById = catchAsync(async(req, res)=>{
     const {contactId} = req.params;
@@ -22,15 +26,18 @@ exports.deleteContact = catchAsync(async (req, res)=>{
 })
 
 exports.postContact = catchAsync(async(req, res)=>{
-    const newContact = await Contact.create(req.body);
+    const {_id: owner} = req.user;
+    const newContact = await Contact.create({...req.body, owner});
     res.status(201).json(newContact);
 })
 
 exports.updateContact = catchAsync( async (req, res)=>{
-    const {contactId} = req.params
+    const { _id: owner } = req.user;
+    const {contactId} = req.params;
     const updatedContact = await Contact.findByIdAndUpdate(
         contactId,
         req.body,
+        owner,
         {new: true}
     );
     if(!updatedContact){

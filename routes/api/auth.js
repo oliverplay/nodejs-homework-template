@@ -12,7 +12,7 @@ const {validateBody, authantication} = require("../../middleware")
 
 const router = express.Router();
 
-router.post('/signup',validateBody(authValidation), signup);
+router.post('/register',validateBody(authValidation), signup);
 router.post('/login',validateBody(authValidation), login);
 router.post("/logout", authantication, logout);
 router.get("/current", authantication, getCurrent);
