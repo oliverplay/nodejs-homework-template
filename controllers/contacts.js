@@ -36,7 +36,7 @@ const getById = async (req, res, next) => {
 
   const updateContact = async (req, res, next) => {
     const {contactId} = req.params;
-    const updContact = await contactsMethods.updateContact(contactId,req.body);
+    const updContact = await contactsMethods.updateContact(contactId, req.body);
 
     if (!updContact) {
         throw HttpErrors(404, "Not found");
