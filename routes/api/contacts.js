@@ -2,7 +2,7 @@ const express = require("express");
 const Joi = require("joi");
 const ctrl = require('../../controllers/contacts');
 const {validateBody} = require("../../middlewares");
-console.log(validateBody);
+
 
 const router = express.Router();
 
