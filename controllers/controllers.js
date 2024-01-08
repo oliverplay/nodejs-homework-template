@@ -34,11 +34,12 @@ exports.postContact = catchAsync(async(req, res)=>{
 exports.updateContact = catchAsync( async (req, res)=>{
     const { _id: owner } = req.user;
     const {contactId} = req.params;
-    const updatedContact = await Contact.findByIdAndUpdate(
-        contactId,
-        req.body,
-        owner,
-        {new: true}
+    const updatedContact = await Contact.findOneAndUpdate(
+      { _id: contactId, owner },
+      req.body,
+      {
+        new: true,
+      }
     );
     if(!updatedContact){
         throw httpError(404, 'Not found')
@@ -46,4 +47,3 @@ exports.updateContact = catchAsync( async (req, res)=>{
     res.status(200).json(updatedContact);
 
 })
-
