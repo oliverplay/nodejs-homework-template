@@ -8,22 +8,21 @@ exports.getAllContacts = catchAsync(async(req, res) =>{
     res.status(200).json(allContacts)
 } )
 
-// const contacts = await Contact.find(query).populate("owner", "email");
-// return contacts;
-
 exports.getById = catchAsync(async(req, res)=>{
+    const { _id: owner } = req.user;
     const {contactId} = req.params;
-    const contact = await Contact.findById(contactId);
+    const contact = await Contact.findOne({ _id: contactId, owner });
     if(!contact) throw httpError(404, 'Not found')
     res.status(200).json(contact)
 })
 
 exports.deleteContact = catchAsync(async (req, res)=>{
+    const { _id: owner } = req.user;
     const {contactId} = req.params;
-    const deletedContact = await Contact.findByIdAndDelete(contactId);
+    const deletedContact = await Contact.findOneAndDelete({ _id: contactId, owner });
     if(!deletedContact) throw httpError(404, 'Not found')
     res.status(200).json({message: 'Contact was deleted!'})
-})
+});
 
 exports.postContact = catchAsync(async(req, res)=>{
     const {_id: owner} = req.user;
