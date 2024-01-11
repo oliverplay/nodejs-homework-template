@@ -8,8 +8,7 @@ const updateById = async (req, res, next) => {
     throw new NotFound(`Product with id=${contactId} not found`);
   }
   res.json({
-    status: "success",
-    code: 200,
+
     data: {
       result,
     },
