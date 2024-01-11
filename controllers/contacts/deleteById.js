@@ -8,8 +8,7 @@ const deleteById = async (req, res, next) => {
     throw new NotFound(`Contact with id=${contactId} not found`);
   }
   res.json({
-    status: "success",
-    code: 200,
+ 
     message: "contact deleted",
     data: {
       result,
