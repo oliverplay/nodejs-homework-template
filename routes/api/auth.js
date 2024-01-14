@@ -4,11 +4,12 @@ const {
     login,
     getCurrent,
     logout,
-    updateSubscription
+    updateSubscription,
+    updateAvatar
 } = require('../../controllers')
 
 const {authValidation} = require('../../utilities')
-const {validateBody, authantication} = require("../../middleware")
+const {validateBody, authantication, uploadUserPhoto} = require("../../middleware")
 
 const router = express.Router();
 
@@ -18,5 +19,6 @@ router.post("/logout", authantication, logout);
 router.get("/current", authantication, getCurrent);
 router.patch("/", authantication, updateSubscription)
 
+router.patch("/avatars", authantication, uploadUserPhoto.single("avatarURL"), updateAvatar)
 
 module.exports = router;

@@ -1,5 +1,9 @@
 const jwt = require('jsonwebtoken');
-const bcrypt = require('bcrypt')
+const Jimp = require("jimp");
+const gravatar = require("gravatar");
+const bcrypt = require('bcrypt');
+const path = require('path');
+const fs = require("fs/promises");
 const { catchAsync } = require('../utilities');
 const { User } = require('../models/users');
 const { httpError } = require('../utilities');
@@ -9,12 +13,14 @@ exports.signup = catchAsync(async (req, res) => {
     const { email, password } = req.body;
     const user = await User.findOne({email});
     if (user) throw httpError(409, 'Email in use');
+    const avatarURL = gravatar.url(email);
     const hashPassword = await bcrypt.hash(password, 12);
-    const newUser = await User.create({ ...req.body, password: hashPassword });
+    const newUser = await User.create({ ...req.body, password: hashPassword, avatarURL });
     res.status(201).json({
       user: { email: newUser.email, subscription: newUser.subscription },
     });
 });
+
 
 exports.login = catchAsync(async (req, res) => {
   const {email, password} = req.body;
@@ -74,3 +80,49 @@ exports.updateSubscription = catchAsync(async (req, res) => {
 
   res.status(201).json('Subscription is updated!');
 });
+
+const avatarsDir = path.join(__dirname, "../", "public", "avatars");
+
+
+exports.updateAvatar = catchAsync(async (req, res) => {
+  if (!req.file) {
+    throw httpError(400, "File upload error");
+  }
+  const { _id } = req.user;
+  const { path: tempUpload, originalname } = req.file;
+  const fileName = `${_id}_${originalname}`;
+
+  const resultUpload = path.join(avatarsDir, fileName);
+  await fs.rename(tempUpload, resultUpload);
+
+  const image = await Jimp.read(resultUpload);
+  await image.contain(250, 250);
+  await image.writeAsync(resultUpload);
+
+  const avatarURL = path.join("avatars", fileName);
+  await User.findByIdAndUpdate(_id, { avatarURL });
+
+  res.status(200).json({ avatarURL });
+ });
+
+
+//  const updateAvatar = async (req, res) => {
+//   const filedata = req.file;
+//   if (!filedata) {
+//     throw HttpError(400, "File upload error");
+//   }
+
+//   const { _id } = req.user;
+//   const { path: tempUpload, originalname } = req.file;
+//   const filename = `${_id}_${originalname}`;
+//   const resultUpload = path.join(avatarsDir, filename);
+//   await fs.rename(tempUpload, resultUpload);
+
+//   const image = await Jimp.read(resultUpload);
+//   await image.contain(250, 250);
+//   await image.writeAsync(resultUpload);
+
+//   const avatarURL = path.join("avatars", filename);
+//   await User.findByIdAndUpdate(_id, { avatarURL });
+//   res.json({ avatarURL });
+// };

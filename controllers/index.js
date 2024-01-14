@@ -8,7 +8,8 @@ const {
     login,
     getCurrent,
     logout,
-    updateSubscription
+    updateSubscription,
+    updateAvatar
 } = require('./authControllers')   
 
 module.exports = {
@@ -21,5 +22,6 @@ module.exports = {
   login,
   getCurrent,
   logout,
-  updateSubscription
+  updateSubscription,
+  updateAvatar
   }
