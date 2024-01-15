@@ -2,6 +2,7 @@ const validateBody = require('./validate');
 const wrapperCtrl = require('./ctrlWrapper');
 const Contact =  require('../models/contact');
 const validateFavorite = require('./validate')
+const isValidId = require('./isValidId')
 
 const getAll = async (req, res) => {
           const contacts = await Contact.find();
@@ -12,7 +13,8 @@ const getAll = async (req, res) => {
          const contact = await Contact.findById (req.params.id)
       if (!contact) {
         res.status(404).json({"message": "Not found"});
-        }
+        }  
+      
     res.json(contact);
   }
 
@@ -39,6 +41,7 @@ const put = async (req, res) => {
     if (!result) {
       res.status(404).json({"message": "Not found"});
     }
+  
 
     res.status(200).json(result);
 }
@@ -61,5 +64,5 @@ const changeFavorite = async (req, res) => {
     add: wrapperCtrl(add),
     deleteById: wrapperCtrl(deleteById),
     put: wrapperCtrl(put),
-    changeFavorite: wrapperCtrl(changeFavorite)
+    changeFavorite: wrapperCtrl(changeFavorite),
   }
