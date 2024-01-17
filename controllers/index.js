@@ -9,7 +9,9 @@ const {
     getCurrent,
     logout,
     updateSubscription,
-    updateAvatar
+    updateAvatar,
+    verifyEmail,
+    resendVerifyEmail
 } = require('./authControllers')   
 
 module.exports = {
@@ -23,5 +25,7 @@ module.exports = {
   getCurrent,
   logout,
   updateSubscription,
-  updateAvatar
+  updateAvatar,
+  verifyEmail,
+  resendVerifyEmail
   }

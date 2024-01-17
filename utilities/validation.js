@@ -35,11 +35,16 @@ const bodyValidation = Joi.object({
       .messages({ "any.required": "not acceptable data" }),  
   });
 
+  const emailValidation = Joi.object({
+    email: Joi.string().required(),
+  });
+
 
   module.exports = {
     bodyValidation,
     updateFavoriteValidation,
-    authValidation
+    authValidation,
+    emailValidation
   };
 
 
