@@ -30,6 +30,7 @@ exports.signup = catchAsync(async (req, res) => {
 
     await sendEmail(verifyEmail);
     res.status(201).json({
+      message: 'Registred success',
       user: { email: newUser.email, subscription: newUser.subscription },
     });
 });
@@ -122,7 +123,7 @@ exports.updateAvatar = catchAsync(async (req, res) => {
 
 exports.verifyEmail = catchAsync(async( req, res) => {
   const { verificationToken } = req.params;
-  const user = User.findOne({verificationToken});
+  const user = await User.findOne({verificationToken});
 
   if (!user) {
     throw httpError(404, 'User not found');

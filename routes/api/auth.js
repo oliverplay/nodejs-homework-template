@@ -22,6 +22,7 @@ router.get("/current", authantication, getCurrent);
 router.patch("/", authantication, updateSubscription)
 
 router.patch("/avatars", authantication, uploadUserPhoto.single("avatarURL"), updateAvatar)
+
 router.get("/verify/:verificationToken", verifyEmail);
 router.post("/verify",validateBody(emailValidation), resendVerifyEmail)
 module.exports = router;

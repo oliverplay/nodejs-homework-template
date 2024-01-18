@@ -1,6 +1,6 @@
 const catchAsync = require("./catchAsync");
 const httpError = require("./httpError");
-const {bodyValidation, updateFavoriteValidation, authValidation} = require("./validation")
+const {bodyValidation, updateFavoriteValidation, authValidation, emailValidation} = require("./validation")
 const sendEmail = require('./sendEmail')
 module.exports = {
     catchAsync,
@@ -8,5 +8,6 @@ module.exports = {
     bodyValidation,
     updateFavoriteValidation,
     authValidation,
+    emailValidation,
     sendEmail
 }
