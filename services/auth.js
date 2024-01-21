@@ -1,49 +1,31 @@
-const bcrypt = require("bcrypt");
+const jwt = require('jsonwebtoken');
+const User = require('../models/user')
 
-const User = require("../models/user");
+const auth = (req, res, next) => {
+    const authHeader = req.headers.authorization;
 
-async function register(req, res, next) {
-  const { name, email, password } = req.body;
-  try {
-    /*-- Tworzymy kod aby nie powtarzał się ten sam email dla różnych ludzi --*/
-    const user = await User.findOne({ email });
+if ( typeof authHeader === "undefined") {
+    return res.status(401).json({"message": "Not authorized"})
+}
+const [bearer, token] = authHeader.split(' ', 2);
 
-    if (user === null) {
-      return restart.status(409).send({ message: "User already register" });
+if (bearer !== "Bearer") {
+    return res.status(401).json({"message": "Not authorized"})
+}
+jwt.verify(token, process.env.JWT_SECRET, async (err, decode) => {
+    if (err) {
+        return res.status(401).json({"message": "Not authorized"})
     }
+    req.user = {
+        _id: decode.id,
+    }
+const user = await User.findById(req.user);
+if (user === null || user.token !== token) {
+    return res.status(401).json({"message": "Not authorized"})
+}
+})
 
-    const passwordHash = await bcrypt.hash(password, 10);
-
-    await User.create({ email, password: passwordHash });
-    res.send("Register");
-  } catch (error) {
-    next(error);
-  }
+next();
 }
 
-async function login(req, res, next) {
-  const { email, password } = req.body;
-  try {
-    const user = await User.findOne({ email });
-    if (user === null) {
-      console.log("Email");
-      return res
-        .status(401)
-        .send({ message: "Email or password is incorrect" });
-    }
-
-    const isMatch = await bcrypt.compare(password, user.password);
-    if (isMatch === false) {
-      console.log("Password");
-      return res
-        .status(401)
-        .send({ message: "Email or password is incorrect" });
-    }
-
-    res.send("Login");
-  } catch (error) {
-    next(error);
-  }
-}
-
-module.exports = { register, login };
+module.exports = auth;

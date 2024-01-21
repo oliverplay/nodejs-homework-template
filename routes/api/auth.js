@@ -1,11 +1,19 @@
-const express = require('express');
+const express = require('express')
+const router = express.Router();
+const jsonParser = express.json();
+const authControllers = require('../../controllers/authControllers');
+const authHeader = require('../../services/auth');
 
-const AuthController = require('../../services/auth');
-const router = express.Router;
-const jsonParser = express.json;
 
 
-router.post('/register', jsonParser, AuthController.register);
-router.post('/login', jsonParser, AuthController.login);
+router.post('/register', jsonParser, authControllers.addUser);
+
+router.post('/login', jsonParser, authControllers.logUser);
+
+router.post('/logout', authHeader, jsonParser, authControllers.logout);
+
+router.get('/current', authHeader, jsonParser, authControllers.current)
+
+
 
 module.exports = router;
