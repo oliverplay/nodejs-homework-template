@@ -2,7 +2,6 @@ const mongoose = require("mongoose");
 
 const contactSchema = new mongoose.Schema(
   {
-  
     name: {
       type: String,
       required: [true, "Set name for contact"],
@@ -13,6 +12,12 @@ const contactSchema = new mongoose.Schema(
     phone: {
       type: String,
     },
+
+    owner: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "user",
+    },
+
     favorite: {
       type: Boolean,
       default: false,
