@@ -1,25 +1,23 @@
 const express = require('express')
+const router = express.Router();
+const jsonParser = express.json();
+const controllers = require('../../controllers/contactControllers');
+const isValidId = require('../../services/isValidId');
 
-const router = express.Router()
 
-router.get('/', async (req, res, next) => {
-  res.json({ message: 'template message' })
-})
 
-router.get('/:contactId', async (req, res, next) => {
-  res.json({ message: 'template message' })
-})
+router.get('/', controllers.getAll)
 
-router.post('/', async (req, res, next) => {
-  res.json({ message: 'template message' })
-})
+router.get('/:id', isValidId, controllers.getById)
 
-router.delete('/:contactId', async (req, res, next) => {
-  res.json({ message: 'template message' })
-})
+router.post('/', jsonParser, controllers.add)
 
-router.put('/:contactId', async (req, res, next) => {
-  res.json({ message: 'template message' })
-})
+router.delete('/:id',isValidId, controllers.deleteById)
 
-module.exports = router
+router.put('/:id',isValidId, jsonParser, controllers.put)
+
+router.patch('/:id/favorite', isValidId, jsonParser, controllers.changeFavorite)
+
+
+
+module.exports = router;
