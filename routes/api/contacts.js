@@ -1,23 +1,38 @@
-const express = require('express')
+const express = require("express");
+
+const ctrl = require("../../controllers/contactControllers");
+
+const { isValidId, validateBody, authenticate } = require("../../middlewares");
+
+const { addSchema, updateFavoriteSchema } = require("../../models/contact");
+
 const router = express.Router();
-const jsonParser = express.json();
-const controllers = require('../../controllers/contactControllers');
-const isValidId = require('../../services/isValidId');
 
+router.get("/", authenticate, ctrl.getAll);
 
+router.get("/:contactId", authenticate, isValidId, ctrl.getById);
 
-router.get('/', controllers.getAll)
+router.post("/", authenticate, validateBody(addSchema), ctrl.add);
 
-router.get('/:id', isValidId, controllers.getById)
+router.delete("/:contactId", authenticate, isValidId, ctrl.deleteById);
 
-router.post('/', jsonParser, controllers.add)
+router.put(
+    "/:contactId",
+    authenticate,
+    isValidId,
+    validateBody(addSchema),
+    ctrl.updateById
+);
 
-router.delete('/:id',isValidId, controllers.deleteById)
+router.patch(
+    "/:contactId/favorite",
+    authenticate,
+    validateBody(updateFavoriteSchema),
+    isValidId,
+    ctrl.updateStatusContact
+);
 
-router.put('/:id',isValidId, jsonParser, controllers.put)
-
-router.patch('/:id/favorite', isValidId, jsonParser, controllers.changeFavorite)
-
+module.exports = router;
 
 
 module.exports = router;
