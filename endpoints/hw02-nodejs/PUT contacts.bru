@@ -1,0 +1,19 @@
+meta {
+  name: PUT contacts
+  type: http
+  seq: 2
+}
+
+put {
+  url: {{endpoint}}/contacts/220e65e7-a5c0-49e9-9371-19583eb54231
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "name": "Val the Great",
+    "email": "val123@testu.com",
+    "phone": "123456789234"
+  }
+}

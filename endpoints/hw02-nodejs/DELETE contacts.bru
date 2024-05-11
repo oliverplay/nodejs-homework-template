@@ -1,0 +1,19 @@
+meta {
+  name: DELETE contacts
+  type: http
+  seq: 6
+}
+
+delete {
+  url: {{endpoint}}/contacts/220e65e7-a5c0-49e9-9371-19583eb54231
+  body: none
+  auth: none
+}
+
+body:json {
+  {
+    "name": "Saring",
+    "email": "saring@test.com",
+    "phone": "123456789"
+  }
+}
