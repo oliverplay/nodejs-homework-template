@@ -1,6 +1,6 @@
 import Joi from "joi";
 
-//define validation for adding a contact
+//define validation for adding and updating a contact
 const contactValidation = Joi.object({
     name: Joi.string().required(),
     email: Joi.string().required(),
@@ -8,4 +8,9 @@ const contactValidation = Joi.object({
     favorite: Joi.boolean(),
 });
 
-export { contactValidation };
+//define validation for updating favorite field
+const favoriteValidation = Joi.object({
+    favorite: Joi.bool().required(),
+});
+
+export { contactValidation, favoriteValidation };
