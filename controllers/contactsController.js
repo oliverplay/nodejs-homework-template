@@ -4,10 +4,10 @@ import { httpError } from "../helpers/httpError.js";
 
 
 const getAllContacts = async (req, res) => {
-    const {page = 1, limit = 20, favorite } = req.query;
-    const query = favorite ? {favorite: true } : {};
+    const { page = 1, limit = 20, favorite } = req.query;
+    const query = favorite ? { favorite: true } : {};
 
-    const result = await Contact.find(query).skip((page-1) * limit).limit(parseInt(limit));
+    const result = await Contact.find(query).skip((page - 1) * limit).limit(parseInt(limit));
 
     res.json(result);
 };
@@ -29,7 +29,7 @@ const deleteContactById = async (req, res) => {
 
     if (!result) {
         throw httpError(404, "😡");
-        //return process.exit(1);
+
     }
     res.json({ message: "Contact deleted🗑️", });
 };
@@ -59,7 +59,7 @@ const updateContactById = async (req, res) => {
         throw httpError(404, "😡");
     }
     //res.json(result);
-    res.status(201, "update successful🎉" ).json(result);
+    res.status(201, "update successful🎉").json(result);
 };
 
 const updateStatusContact = async (req, res) => {
