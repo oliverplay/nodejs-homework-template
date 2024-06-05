@@ -8,6 +8,8 @@ const {
   updateContact
 } = require('../../models/contacts');
 
+const { validateContact } = require('../../Validation/joi');
+
 const router = express.Router();
 
 // GET all contacts
@@ -36,15 +38,9 @@ router.get('/:id', async (req, res, next) => {
 
 // POST new contact
 router.post('/', async (req, res, next) => {
-  const schema = Joi.object({
-    name: Joi.string().required(),
-    email: Joi.string().email().required(),
-    phone: Joi.string().required()
-  });
-
   try {
-    const validatedData = await schema.validateAsync(req.body);
-    const newContact = await addContact(validatedData);
+    await validateContact(req.body);
+    const newContact = await addContact(req.body);
     res.status(201).json(newContact);
   } catch (error) {
     next(error);
@@ -67,15 +63,9 @@ router.delete('/:id', async (req, res, next) => {
 
 // PUT update contact by ID
 router.put('/:id', async (req, res, next) => {
-  const schema = Joi.object({
-    name: Joi.string(),
-    email: Joi.string().email(),
-    phone: Joi.string()
-  }).or('name', 'email', 'phone');
-
   try {
-    const validatedData = await schema.validateAsync(req.body);
-    const updatedContact = await updateContact(req.params.id, validatedData);
+    await validateContact(req.body);
+    const updatedContact = await updateContact(req.params.id, req.body);
     if (updatedContact) {
       res.status(200).json(updatedContact);
     } else {

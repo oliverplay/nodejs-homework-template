@@ -1,9 +1,17 @@
 const Joi = require('joi');
 
-const schema = Joi.object({
-  username: Joi.string().alphanum().min(3).max(30).required(),
+const contactSchema = Joi.object({
+  name: Joi.string().required(),
   email: Joi.string().email().required(),
-  age: Joi.number().integer().min(18).max(120),
+  phone: Joi.string().required()
 });
 
-module.exports = schema;
+async function validateContact(contact) {
+  try {
+    await contactSchema.validateAsync(contact);
+  } catch (error) {
+    throw new Error(error.details[0].message);
+  }
+}
+
+module.exports = { validateContact };
