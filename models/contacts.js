@@ -1,14 +1,32 @@
-// const fs = require('fs/promises')
+const contactsData = require('./contacts.json');
 
-const listContacts = async () => {}
+const listContacts = () => contactsData;
 
-const getContactById = async (contactId) => {}
+const getContactById = (contactId) => contactsData.find((contact) => contact.id === contactId);
 
-const removeContact = async (contactId) => {}
+const removeContact = (contactId) => {
+  const index = contactsData.findIndex((contact) => contact.id === contactId);
+  if (index !== -1) {
+    contactsData.splice(index, 1);
+    return true;
+  }
+  return false;
+};
 
-const addContact = async (body) => {}
+const addContact = (body) => {
+  const newContact = { id: Math.random().toString(), ...body };
+  contactsData.push(newContact);
+  return newContact;
+};
 
-const updateContact = async (contactId, body) => {}
+const updateContact = (contactId, body) => {
+  const index = contactsData.findIndex((contact) => contact.id === contactId);
+  if (index !== -1) {
+    contactsData[index] = { ...contactsData[index], ...body };
+    return contactsData[index];
+  }
+  return null;
+};
 
 module.exports = {
   listContacts,
@@ -16,4 +34,4 @@ module.exports = {
   removeContact,
   addContact,
   updateContact,
-}
+};
