@@ -1,4 +1,8 @@
 import bcrypt from "bcrypt";
+import gravatar from "gravatar";
+import Jimp from "jimp";
+import path from "path";
+import fs from "fs/promises";
 import jwt from "jsonwebtoken";
 import "dotenv/config";
 import { User } from "../models/usersModel.js";
@@ -22,15 +26,23 @@ const signupUser = async (req, res) => {
         throw httpError(409, "Email in Use");
     }
 
-    const hashPassword = await bcrypt.hash(password, 10)
+    const hashPassword = await bcrypt.hash(password, 10);
 
-    const newUser = await User.create({ email, password: hashPassword });
+    // create a link to the user's avatar with gravatar
+    const avatarURL = gravatar.url(email, { protocol: "http" });
+
+    const newUser = await User.create({
+        email,
+        password: hashPassword,
+        avatarURL,
+    });
 
     // Registration success response
     res.status(201).json({
         user: {
             email: newUser.email,
             subscription: newUser.subscription,
+            avatarURL: newUser.avatarURL,
         },
     });
 };
@@ -108,5 +120,26 @@ const updateUserSubscription = async (req, res) => {
     });
 };
 
+const updateAvatar = async (req, res) => {
+    const { _id } = req.user;
+    const { path: oldPath, originalname } = req.file;
 
-export { signupUser, loginUser, logoutUser, getCurrentUsers, updateUserSubscription };
+    await Jimp.read(oldPath).then((image) =>
+        // image.resize(250, 250).write(oldPath)
+        image.cover(250, 250).write(oldPath)
+    );
+
+    const extension = path.extname(originalname);
+    const filename = `${_id}${extension}`;
+
+    const newPath = path.join("public", "avatars", filename);
+    await fs.rename(oldPath, newPath);
+
+    const avatarURL = path.join("/avatars", filename);
+
+    await User.findByIdAndUpdate(_id, { avatarURL });
+    res.status(200).json({ avatarURL });
+};
+
+
+export { signupUser, loginUser, logoutUser, getCurrentUsers, updateUserSubscription, updateAvatar };
