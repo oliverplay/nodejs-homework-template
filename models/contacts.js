@@ -28,7 +28,7 @@ const getContactById = async (contactId) => {
 };
 
 const removeContact = async (contactId) => {
-  return await Contact.findByIdAndRemove(contactId);
+  return await Contact.findByIdAndDelete(contactId);
 };
 
 const addContact = async (body) => {
