@@ -2,7 +2,7 @@ const express = require("express");
 const morgan = require("morgan");
 const cors = require("cors");
 const path = require("path");
-const { v4: uuid4 } = require("uuid");
+const { v4: uuidv4 } = require("uuid");
 const Joi = require("joi");
 const fs = require("fs/promises");
 
@@ -116,7 +116,7 @@ app.put("/api/contacts/:id", async (req, res) => {
   const validation = schema.validate(req.body);
 
   if (validation.error) {
-    return restart
+    return res
       .status(400)
       .json({ message: validation.error.details[0].message });
   }
@@ -137,7 +137,7 @@ app.put("/api/contacts/:id", async (req, res) => {
 });
 
 app.use((req, res) => {
-  res.status(404).json({ message: "Not found" });
+  res.status(404).json({ message: "Not Found" });
 });
 
 module.exports = app;
