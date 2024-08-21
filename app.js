@@ -7,7 +7,6 @@ const Joi = require("joi");
 const fs = require("fs/promises");
 
 const app = express();
-const PORT = 3000;
 
 app.use(morgan("dev"));
 app.use(cors());
@@ -103,9 +102,9 @@ app.delete("/api/contacts/:id", async (req, res) => {
     res.status(500).json({ message: error.message });
   }
 });
+
 app.put("/api/contacts/:id", async (req, res) => {
   const { id } = req.params;
-  const { name, email, phone } = req.body;
 
   const schema = Joi.object({
     name: Joi.string(),
@@ -120,6 +119,7 @@ app.put("/api/contacts/:id", async (req, res) => {
       .status(400)
       .json({ message: validation.error.details[0].message });
   }
+
   try {
     const contacts = await readContacts();
     const index = contacts.findIndex((c) => c.id === id);
