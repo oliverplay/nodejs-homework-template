@@ -4,12 +4,14 @@ const path = require("path");
 const router = express.Router();
 
 let contactsPath = "";
+
 router.use((req, res, next) => {
   if (!contactsPath) {
     contactsPath = req.app.locals.contactsPath;
   }
   next();
 });
+
 router.get("/", (req, res, next) => {
   fs.readFile(contactsPath, "utf8", (err, data) => {
     if (err) {
