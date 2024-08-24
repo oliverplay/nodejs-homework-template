@@ -1,25 +1,63 @@
-const express = require('express')
+const express = require('express');
+const router = express.Router();
+const contacts = require('../../models/contacts')
 
-const router = express.Router()
-
+// List all contacts
 router.get('/', async (req, res, next) => {
-  res.json({ message: 'template message' })
-})
+  try {
+    const allContacts = await contacts.listContacts();
+    res.json(allContacts);
+  } catch (error) {
+    next(error);
+  }
+});
 
+// Get a contact by ID
 router.get('/:contactId', async (req, res, next) => {
-  res.json({ message: 'template message' })
-})
+  try {
+    const contact = await contacts.getContactById(req.params.contactId);
+    if (contact) {
+      res.json(contact);
+    } else {
+      res.status(404).json({ message: 'Contact not found' });
+    }
+  } catch (error) {
+    next(error);
+  }
+});
 
+// Add a new contact
 router.post('/', async (req, res, next) => {
-  res.json({ message: 'template message' })
-})
+  try {
+    const newContact = await contacts.addContact(req.body);
+    res.status(201).json(newContact);
+  } catch (error) {
+    next(error);
+  }
+});
 
+// Remove a contact by ID
 router.delete('/:contactId', async (req, res, next) => {
-  res.json({ message: 'template message' })
-})
+  try {
+    const updatedContacts = await contacts.removeContact(req.params.contactId);
+    res.json({ message: 'Contact removed', contacts: updatedContacts });
+  } catch (error) {
+    next(error);
+  }
+});
 
+// Update a contact by ID
 router.put('/:contactId', async (req, res, next) => {
-  res.json({ message: 'template message' })
-})
+  try {
+    const updatedContact = await contacts.updateContact(req.params.contactId, req.body);
+    if (updatedContact) {
+      res.json(updatedContact);
+    } else {
+      res.status(404).json({ message: 'Contact not found' });
+    }
+  } catch (error) {
+    next(error);
+  }
+});
 
-module.exports = router
+module.exports = router;
