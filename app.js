@@ -1,7 +1,7 @@
 const express = require('express');
 const morgan = require('morgan');
 const cors = require('cors');
-const contactsRouter = require('./routes/contacts');
+const contactsRouter = require('./routes/api/contacts');
 const errorHandler = require('./helpers/errorHandler'); // Importing the error handler
 
 const app = express();
