@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const contacts = require('../../models/contacts');  // Adjust the path as needed
+const contacts = require('../../models/contacts'); 
 
 // GET /api/contacts
 router.get('/', async (req, res, next) => {
