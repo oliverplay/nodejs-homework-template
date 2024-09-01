@@ -10,10 +10,10 @@ const addContact = async (body) => {}
 
 const updateContact = async (contactId, body) => {}
 
-module.exports = {
+export {
   listContacts,
   getContactById,
   removeContact,
   addContact,
   updateContact,
-}
+};
