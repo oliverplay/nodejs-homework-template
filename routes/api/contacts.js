@@ -1,7 +1,7 @@
 // routes/contacts.js
 const express = require('express');
 const router = express.Router();
-const validateContact = require('../helpers/validateContact');
+const validateContact = require('../../helpers/validateContact');
 const {
   listContacts,
   getContactById,

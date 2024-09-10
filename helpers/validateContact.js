@@ -1,15 +1,10 @@
 // helpers/validateContact.js
-const Joi = require('joi');
-
-const validateContact = (contact) => {
-  const schema = Joi.object({
-    name: Joi.string().required(),
-    email: Joi.string().email().required(),
-    phone: Joi.string().required()
-  });
-
-  return schema.validate(contact);
-};
+function validateContact(contact) {
+  // Placeholder validation logic
+  if (!contact.name || !contact.email || !contact.phone) {
+    return false;
+  }
+  return true;
+}
 
 module.exports = validateContact;
-
