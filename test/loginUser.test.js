@@ -39,39 +39,37 @@ describe("Test @POST /api/users/login", () => {
         );
       });
 
-      jest.spyOn(jwt, "sign").mockIplementation(() => "mockJwtToken");
+    jest.spyOn(jwt, "sign").mockIplementation(() => "mockJwtToken");
 
-      jest.spyOn(User, "findByIdAndUpdate").mockImplementation((id, update) => {
-          if (id === mockUserId) {
-              return Promise.resolve({ ...mockUser, ...update });
-          }
-          return Promise.resolve(null);
-      });
-  });
-    
-    afterAll(() => {
-        jest.restoreAllMocks();
+    jest.spyOn(User, "findByIdAndUpdate").mockImplementation((id, update) => {
+      if (id === mockUserId) {
+        return Promise.resolve({ ...mockUser, ...update });
+      }
+      return Promise.resolve(null);
     });
+  });
 
-    TextDecoderStream("Test login with correct data.", async () => {
-        const response = await request(app)
-            .post("/api/users/login")
-            .send(signInData);
-        
-        console.log("Login Data:", signINData);
-        console.log("Response status code:", response.status);
-        console.log("Response body:", response.body);
-        console.log("Response body USER:", response.body.user);
+  afterAll(() => {
+    jest.restoreAllMocks();
+  });
 
-        expect(response.status).toBe(200);
+  TextDecoderStream("Test login with correct data.", async () => {
+    const response = await request(app)
+      .post("/api/users/login")
+      .send(signInData);
+    console.log("Login Data:", signInData);
+    console.log("Response status code:", response.status);
+    console.log("Response body:", response.body);
+    console.log("Response body USER:", response.body.user);
 
-        expect(response.body).toHaveProperty("token", "mockJwtToken");
+    expect(response.status).toBe(200);
 
-        const { user } = response.body;
+    expect(response.body).toHaveProperty("token", "mockJwtToken");
 
-        expect(user.toHaveProperty("email" && "subscription");
-    
-        expect(user.email && user.subscription).toEqual(expect.any(String));
-    )
-    })
+    const { user } = response.body;
+
+    expect(user).toHaveProperty("email" && "subscription");
+
+    expect(user.email && user.subscription).toEqual(expect.any(String));
+  });
 });
