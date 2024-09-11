@@ -1,23 +1,17 @@
-const mongoose = require("mongoose");
-const app = require("./app");
-
+const mongoose = require('mongoose');
+const app = require('./app');
 require('dotenv').config();
-console.log("Environment variables loaded"); // Debugging log
 
 const MAIN_PORT = process.env.PORT || 3000;
-const uriDb = process.env.DB_HOST;
+const uriDb = process.env.DB_URL;
 
-console.log(`Connecting to database at ${uriDb}`); // Debugging log
-
-mongoose
-  .connect(uriDb)
+mongoose.connect(uriDb)
   .then(() => {
-    console.log("Database connection successful"); // Debugging log
     app.listen(MAIN_PORT, () => {
-      console.log(`Server is running on port ${MAIN_PORT}`); // Debugging log
+      console.log(`Server is running on http://localhost:${MAIN_PORT}`);
     });
   })
   .catch((err) => {
-    console.error(`Server not running. Error message: ${err.message}`);
+    console.error(`Database connection error: ${err.message}`);
     process.exit(1);
   });
