@@ -40,9 +40,9 @@ router.get("/:contactId", async (req, res, next) => {
 /* POST: // http://localhost:3000/api/contacts/ 
 {
     "id": 1,
-    "name": "Valerie Oblea",
-    "email": "valerieoblea@example.com",
-    "phone": "+639012578943"
+    "name": "Jane Doe",
+    "email": "janedoe@example.com",
+    "phone": "+639512578954"
 } 
 */
 router.post("/", async (req, res, next) => {
@@ -60,7 +60,7 @@ router.post("/", async (req, res, next) => {
   }
 });
 
-// DELETE: // http://localhost:3000/api/contacts/1
+// DELETE: // http://localhost:3000/api/contacts/AeHIrLTr6JkxGE6SN-0Rw
 router.delete("/:contactId", async (req, res, next) => {
   try {
     const { contactId } = req.params;
@@ -78,11 +78,13 @@ router.delete("/:contactId", async (req, res, next) => {
   }
 });
 
-/* PUT: // http://localhost:3000/api/contacts/1
+/* PUT: // http://localhost:3000/api/contacts/qdggE76Jtbfd9eWJHrssH
 {
-    "name": "Joanna Shaw",
-    "email": "shaw@example.com"
-} 
+    "name": "Valerie Oblea",
+    "email": "valerieoblea@example.com",
+    "phone": "+639012578943",
+    "favorite": true
+}  
 */
 router.put("/:contactId", async (req, res, next) => {
   try {
