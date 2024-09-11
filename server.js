@@ -1,16 +1,20 @@
 const mongoose = require("mongoose");
 const app = require("./app");
 
-require('dotenv').config(); // Ensure dotenv is configured
+require('dotenv').config();
+console.log("Environment variables loaded"); // Debugging log
 
 const MAIN_PORT = process.env.PORT || 3000;
-const uriDb = process.env.DB_HOST; // Make sure this matches your .env
+const uriDb = process.env.DB_HOST;
+
+console.log(`Connecting to database at ${uriDb}`); // Debugging log
 
 mongoose
-  .connect(uriDb, { useNewUrlParser: true, useUnifiedTopology: true })
+  .connect(uriDb)
   .then(() => {
+    console.log("Database connection successful"); // Debugging log
     app.listen(MAIN_PORT, () => {
-      console.log("Database connection successful");
+      console.log(`Server is running on port ${MAIN_PORT}`); // Debugging log
     });
   })
   .catch((err) => {
