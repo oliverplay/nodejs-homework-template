@@ -1,21 +1,19 @@
-const express = require('express');
-const mongoose = require('mongoose');
-require('dotenv').config();
+const mongoose = require("mongoose");
+const app = require("./app");
 
-const app = express();
-app.use(express.json());
+require('dotenv').config(); // Ensure dotenv is configured
 
-const DB_HOST = process.env.DB_HOST;
+const MAIN_PORT = process.env.PORT || 3000;
+const uriDb = process.env.DB_HOST; // Make sure this matches your .env
 
-mongoose.connect(DB_HOST)
-  .then(() => console.log('Database connection successful'))
-  .catch(err => {
-    console.error('Database connection error:', err.message);
+mongoose
+  .connect(uriDb, { useNewUrlParser: true, useUnifiedTopology: true })
+  .then(() => {
+    app.listen(MAIN_PORT, () => {
+      console.log("Database connection successful");
+    });
+  })
+  .catch((err) => {
+    console.error(`Server not running. Error message: ${err.message}`);
     process.exit(1);
   });
-
-// Define routes here
-
-app.listen(3000, () => {
-  console.log('Server is running on port 3000');
-});
