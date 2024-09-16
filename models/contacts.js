@@ -1,4 +1,3 @@
-// const fs = require('fs/promises')
 
 const listContacts = async () => {}
 
@@ -19,7 +18,7 @@ module.exports = {
 }
 const { Schema, model } = require("mongoose");
 const Joi = require("joi");
-const { handleMongooseError } = require("../middleware/index");
+const { handleMongooseError } = require("../middlewares/index");
 
 const contactSchema = new Schema(
   {

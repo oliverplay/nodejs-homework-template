@@ -1,7 +1,7 @@
 const { Schema, model } = require("mongoose");
 const Joi = require("joi");
 
-const handleMongooseError = require("../middleware/handleMongooseError");
+const handleMongooseError = require("../middlewares/handleMongooseError");
 
 const emailRegexp =
   // eslint-disable-next-line no-useless-escape

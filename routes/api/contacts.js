@@ -1,9 +1,9 @@
 const express = require("express");
 const router = express.Router();
 
-const ctrl = require("../../controllers/contacts");
-const { schemas } = require("../../models/contact");
-const { isValidId, validateBody, authenticate } = require("../../middleware");
+const ctrl = require("../../controller/contact");
+const { schemas } = require("../../models/contacts");
+const { isValidId, validateBody, authenticate } = require("../../middlewares");
 
 router.get("/", authenticate, ctrl.listContacts);
 
