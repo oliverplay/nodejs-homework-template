@@ -1,3 +1,3 @@
-const contactsController = require("./contactsController");
+import contactsController from "./contactsController";
 
-module.exports = contactsController;
+export default contactsController;
