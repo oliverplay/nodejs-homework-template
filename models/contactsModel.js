@@ -1,6 +1,5 @@
 import { Schema, model } from "mongoose";
 
-// REFERENCE: https://mongoosejs.com/docs/api/schema.html
 const contactSchema = new Schema(
   {
     name: {
