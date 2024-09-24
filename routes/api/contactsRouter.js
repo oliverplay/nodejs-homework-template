@@ -13,9 +13,9 @@ router.get("/:contactId", ctrlWrapper(getContactById));
 
 /* POST: // http://localhost:3000/api/contacts/ 
 {
-    "name": "Marvin Pacis",
-    "email": "marvinpacis@example.com",
-    "phone": "(639) 840-6611"
+    "name": "Valerie Oblea",
+    "email": "valerieoblea@example.com",
+    "phone": "(632) 540-7721"
 } 
 */
 router.post("/", ctrlWrapper(addContact));
@@ -25,9 +25,9 @@ router.delete("/:contactId", ctrlWrapper(deleteContactById));
 
 /* PUT: // http://localhost:3000/api/contacts/:contactId 
 {
-    "name": "Joanna Shaw",
-    "email": "joannashaw@example.com",
-    "phone": "(639) 777-8819"
+    "name": "Mila Day",
+    "email": "miladay@example.com",
+    "phone": "(631) 222-8789"
 } 
 */
 router.put("/:contactId", ctrlWrapper(updateContactById));
