@@ -1,9 +1,6 @@
 const express = require('express');
 const router = express.Router();
 const jwt = require('jsonwebtoken');
-
-
-
 const User = require('../../schemas/user');
 require('dotenv').config();
 const auth = require("../../middlewares/auth");
@@ -12,17 +9,14 @@ const { validateToken, invalidatedTokens } = require("../../middlewares/token");
 const gravatar = require('gravatar');
 const jimp = require('jimp');
 const path = require('path');
-const fs = require('fs/promises'); 
-
+const fs = require('fs/promises');
 
 const tmpUpload = require('../../middlewares/multerTmp');
 const publicUpload = require('../../middlewares/multerPublic');
 
-
 router.post("/login", async (req, res, next) => {
-  const { email, password } = req.body
-  const user = await User.findOne({ email })
-  console.log(user)
+  const { email, password } = req.body;
+  const user = await User.findOne({ email });
 
   if (!user || !user.validPassword(password)) {
     return res.status(400).json({
@@ -30,70 +24,40 @@ router.post("/login", async (req, res, next) => {
       code: 400,
       message: 'Incorrect login or password',
       data: 'Bad request',
-    })
+    });
   }
 
   const payload = {
     id: user.id,
     username: user.username,
-  }
+  };
 
-  const token = jwt.sign(payload, secret, { expiresIn: '1h' })
+  const token = jwt.sign(payload, secret, { expiresIn: '1h' });
   res.json({
     status: 'success',
     code: 200,
     data: {
       token,
     },
-  })
-})
+  });
+});
 
-// router.post("/users/registration", async (req, res, next) => {
-//   const { username, email, password } = req.body
-//   const user = await User.findOne({ email })
-//   if (user) {
-//     return res.status(409).json({
-//       status: 'error',
-//       code: 409,
-//       message: 'Email is already in use',
-//       data: 'Conflict',
-//     })
-//   }
-//   try {
-//     const newUser = new User({ username, email })
-//     newUser.setPassword(password)
-//     await newUser.save()
-//     res.status(201).json({
-//       status: 'success',
-//       code: 201,
-//       data: {
-//         message: 'Registration successful',
-//       },
-//     })
-//   } catch (error) {
-//     next(error)
-//   }
-// })
-
-router.get("/list", auth, (req, res, next) => {
-  const { username } = req.user
+router.get("/list", auth, (req, res) => {
+  const { username } = req.user;
   res.json({
     status: 'success',
     code: 200,
     data: {
       message: `Authorization was successful: ${username}`,
     },
-  })
-})
+  });
+});
 
-// Route to logout (using GET method as per the original requirement)
 router.get("/logout", validateToken, (req, res) => {
   const authHeader = req.headers.authorization;
   const token = authHeader && authHeader.split(" ")[1];
 
   invalidatedTokens.add(token);
-  console.log(Array.from(invalidatedTokens));
-
   res.status(204).json({
     status: "success",
     code: 204,
@@ -102,30 +66,26 @@ router.get("/logout", validateToken, (req, res) => {
   });
 });
 
-// New route for getting the current user
 router.get("/current", auth, async (req, res, next) => {
   const { email } = req.user;
-  
-  try {
-    // Retrieve the user's subscription from the database
-    const user = await User.findOne({ email });
 
-  res.status(200).json({
-    status: 'success',
-    code: 200,
-    data: {
-      email: user.email,
-      subscription: user.subscription,
-    },
-  });
-} catch (error){
-  next(error);
-}
+  try {
+    const user = await User.findOne({ email });
+    res.status(200).json({
+      status: 'success',
+      code: 200,
+      data: {
+        email: user.email,
+        subscription: user.subscription,
+      },
+    });
+  } catch (error) {
+    next(error);
+  }
 });
 
 router.patch("/users", validateToken, auth, async (req, res, next) => {
   const validSubscriptions = ['starter', 'pro', 'business'];
-
   const { subscription } = req.body;
 
   if (!validSubscriptions.includes(subscription)) {
@@ -140,11 +100,10 @@ router.patch("/users", validateToken, auth, async (req, res, next) => {
   const userId = req.user._id;
 
   try {
-    // Update the user's subscription in the database
     const user = await User.findById(userId);
     user.subscription = subscription;
     await user.save();
-    
+
     res.status(200).json({
       status: 'success',
       code: 200,
@@ -156,12 +115,10 @@ router.patch("/users", validateToken, auth, async (req, res, next) => {
   }
 });
 
-// Avatars
-
+// Avatars route for user registration
 router.post("/registration", publicUpload.single('avatarURL'), async (req, res, next) => {
   const { username, email, password } = req.body;
   const user = await User.findOne({ email });
-  
 
   if (user) {
     return res.status(409).json({
@@ -175,10 +132,8 @@ router.post("/registration", publicUpload.single('avatarURL'), async (req, res, 
   try {
     let avatarURL = '';
     if (req.file) {
-      // Si se proporciona un archivo, usa ese archivo como avatar
       avatarURL = `/avatars/${req.file.filename}`;
     } else {
-      // Si no se proporciona un archivo, usa Gravatar
       avatarURL = gravatar.url(email, { s: '200', r: 'pg', d: 'identicon' });
     }
 
@@ -198,6 +153,7 @@ router.post("/registration", publicUpload.single('avatarURL'), async (req, res, 
   }
 });
 
+// Route to update user's avatar
 router.patch('/avatars', auth, validateToken, tmpUpload.single('avatar'), async (req, res) => {
   try {
     // Check if a file was uploaded
@@ -214,7 +170,6 @@ router.patch('/avatars', auth, validateToken, tmpUpload.single('avatar'), async 
     const avatarFilename = `${Date.now()}_${req.file.originalname}`;
     
     // Define the destination path for the avatar in the "public/avatars" folder
-    
     const avatarPath = path.join('public', 'avatars', avatarFilename);
 
     // Write the resized avatar image to the destination path
@@ -222,18 +177,14 @@ router.patch('/avatars', auth, validateToken, tmpUpload.single('avatar'), async 
 
     // Update the user's avatarURL field in the database
     const userId = req.user._id; 
-    console.log(userId); // Assuming you have access to the user's ID from the token
     const user = await User.findByIdAndUpdate(userId, { avatarURL: `/avatars/${avatarFilename}` }, { new: true });
     
     if (!user) {
       return res.status(404).json({ message: 'User not found' });
     }
 
-    // user.avatarURL = `/avatars/${avatarFilename}`;
-    // await user.save();
-
-     // Delete the temporary file
-     await fs.unlink(imagePath);
+    // Delete the temporary file
+    await fs.unlink(imagePath);
 
     // Return the avatarURL in the response
     res.status(200).json({ avatarURL: user.avatarURL });
@@ -242,6 +193,5 @@ router.patch('/avatars', auth, validateToken, tmpUpload.single('avatar'), async 
     res.status(500).json({ message: 'Internal Server Error' });
   }
 });
-
 
 module.exports = router;
