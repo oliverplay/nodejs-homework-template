@@ -41,4 +41,4 @@ router.put("/:contactId", authenticateToken, ctrlWrapper(updateContactById));
 // prettier-ignore
 router.patch("/:contactId/favorite", authenticateToken, ctrlWrapper(updateStatusContact));
 
-export { router };
+export default router;
