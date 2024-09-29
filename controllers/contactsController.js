@@ -16,7 +16,6 @@ const getAllContacts = async (req, res) => {
 
 const getContactById = async (req, res) => {
   const { contactId } = req.params;
-
   const result = await Contact.findById(contactId);
 
   if (!result) {
@@ -27,10 +26,11 @@ const getContactById = async (req, res) => {
 };
 
 const addContact = async (req, res) => {
+  // Preventing lack of necessary data for contacts (check validations folder)
   const { error } = contactValidation.validate(req.body);
 
   if (error) {
-    throw httpError(400, "missing required field");
+    throw httpError(400, "missing required fields");
   }
 
   const result = await Contact.create(req.body);
@@ -40,7 +40,6 @@ const addContact = async (req, res) => {
 
 const deleteContactById = async (req, res) => {
   const { contactId } = req.params;
-
   const result = await Contact.findByIdAndDelete(contactId);
 
   if (!result) {
@@ -53,13 +52,13 @@ const deleteContactById = async (req, res) => {
 };
 
 const updateContactById = async (req, res) => {
+  // Preventing lack of necessary data for contacts (check validations folder)
   const { error } = contactValidation.validate(req.body);
   if (error) {
     throw httpError(400, "missing fields");
   }
 
   const { contactId } = req.params;
-
   const result = await Contact.findByIdAndUpdate(contactId, req.body, {
     new: true,
   });
@@ -72,13 +71,13 @@ const updateContactById = async (req, res) => {
 };
 
 const updateStatusContact = async (req, res) => {
+  // Preventing lack of necessary data for favorite (check validations folder)
   const { error } = favoriteValidation.validate(req.body);
   if (error) {
     throw httpError(400, "missing field favorite");
   }
 
   const { contactId } = req.params;
-
   const result = await Contact.findByIdAndUpdate(contactId, req.body, {
     new: true,
   });
