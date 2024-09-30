@@ -2,7 +2,7 @@ import bcrypt from "bcrypt";
 import gravatar from "gravatar";
 import jwt from "jsonwebtoken";
 import "dotenv/config";
-import { Jimp } from "jimp";
+import * as Jimp from "jimp";
 import path from "path";
 import fs from "fs/promises";
 import { User } from "../models/usersModel.js";
