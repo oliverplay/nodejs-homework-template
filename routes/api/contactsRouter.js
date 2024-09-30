@@ -15,8 +15,8 @@ router.get("/:contactId", authenticateToken, ctrlWrapper(getContactById));
 /* POST: // http://localhost:3000/api/contacts/ 
 {
     "name": "Valerie Oblea",
-    "email": "valerieoblea@example.com",
-    "phone": "(639) 840-6611"
+    "email": "valerie@example.com",
+    "phone": "(639) 445-1178"
 } 
 */
 router.post("/", authenticateToken, ctrlWrapper(addContact));
@@ -28,7 +28,7 @@ router.delete("/:contactId", authenticateToken, ctrlWrapper(deleteContactById));
 {
     "name": "Maria Maaliw",
     "email": "mariamaaliw@example.com",
-    "phone": "(637) 456-5578"
+    "phone": "(639) 123-4556"
 } 
 */
 router.put("/:contactId", authenticateToken, ctrlWrapper(updateContactById));
