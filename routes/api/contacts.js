@@ -2,6 +2,8 @@ const express = require('express')
 
 const router = express.Router()
 
+//http://localhost:3000/api/contacts
+
 router.get('/', async (req, res, next) => {
   res.json({ message: 'template message' })
 })
