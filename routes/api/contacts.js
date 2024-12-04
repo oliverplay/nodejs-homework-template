@@ -1,74 +1,54 @@
-const express = require('express');
-const Joi = require('joi');
-const {
-  listContacts,
-  getContactById,
-  addContact,
-  removeContact,
-  updateContact,
-} = require('../../models/contacts');
-
+const express = require("express");
+const Joi = require("joi");
 const router = express.Router();
 
-const validateContact = Joi.object({
-  name: Joi.string().required(),
+let nanoid; // Variabila pentru nanoid
+
+// Folosește import dinamic pentru nanoid
+(async () => {
+  const { nanoid: generatedNanoid } = await import("nanoid");
+  nanoid = generatedNanoid;
+})();
+
+// Schema Joi pentru validarea contactelor
+const contactSchema = Joi.object({
+  name: Joi.string().min(3).max(30).required(),
+  phone: Joi.string().pattern(/^[0-9]{10}$/).required(),
   email: Joi.string().email().required(),
-  phone: Joi.string().required(),
 });
 
-router.get('/', async (req, res, next) => {
-  try {
-    const contacts = await listContacts();
-    res.status(200).json(contacts);
-  } catch (error) {
-    next(error);
-  }
+// Exemplu de contacte
+let contacts = [];
+
+// Endpoint pentru obținerea contactelor
+router.get("/", (req, res) => {
+  res.json(contacts);
 });
 
-router.get('/:contactId', async (req, res, next) => {
-  try {
-    const { contactId } = req.params;
-    const contact = await getContactById(contactId);
-    if (!contact) return res.status(404).json({ message: 'Not found' });
-    res.status(200).json(contact);
-  } catch (error) {
-    next(error);
+// Endpoint pentru adăugarea unui contact
+router.post("/", (req, res) => {
+  if (!nanoid) {
+    return res.status(500).send("Internal server error: nanoid not initialized");
   }
+
+  const { error } = contactSchema.validate(req.body);
+  if (error) return res.status(400).send(error.details[0].message);
+
+  const { name, phone, email } = req.body;
+  const id = nanoid();  // Folosim nanoid pentru a genera un ID unic
+
+  const newContact = { id, name, phone, email };
+  contacts.push(newContact);
+  res.status(201).json(newContact);
 });
 
-router.post('/', async (req, res, next) => {
-  try {
-    const { error } = validateContact.validate(req.body);
-    if (error) return res.status(400).json({ message: 'missing required name field' });
-    const newContact = await addContact(req.body);
-    res.status(201).json(newContact);
-  } catch (error) {
-    next(error);
-  }
-});
+// Endpoint pentru ștergerea unui contact
+router.delete("/:id", (req, res) => {
+  const contactIndex = contacts.findIndex((contact) => contact.id === req.params.id);
+  if (contactIndex === -1) return res.status(404).send("Contact not found");
 
-router.delete('/:contactId', async (req, res, next) => {
-  try {
-    const { contactId } = req.params;
-    const removedContact = await removeContact(contactId);
-    if (!removedContact) return res.status(404).json({ message: 'Not found' });
-    res.status(200).json({ message: 'contact deleted' });
-  } catch (error) {
-    next(error);
-  }
-});
-
-router.put('/:contactId', async (req, res, next) => {
-  try {
-    const { contactId } = req.params;
-    const { error } = validateContact.validate(req.body);
-    if (error) return res.status(400).json({ message: 'missing fields' });
-    const updatedContact = await updateContact(contactId, req.body);
-    if (!updatedContact) return res.status(404).json({ message: 'Not found' });
-    res.status(200).json(updatedContact);
-  } catch (error) {
-    next(error);
-  }
+  contacts.splice(contactIndex, 1);
+  res.status(204).send();
 });
 
 module.exports = router;
