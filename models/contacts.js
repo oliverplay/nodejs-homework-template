@@ -2,11 +2,20 @@ const fs = require('fs/promises')
 const path = require('path')
 
 const contactsPath = path.join(__dirname, 'contacts.json')
-
+console.log('Contacts path:', contactsPath);
 const listContacts = async () => {
-  const data = await fs.readFile(contactsPath)
-  return JSON.parse(data)
-}
+  try {
+    const data = await fs.readFile(contactsPath, 'utf-8');
+    console.log('Data read from file:', data); // Adăugați acest log pentru a verifica ce este citit
+    return JSON.parse(data); // Încercați să parsezi JSON-ul
+  } catch (error) {
+    console.error('Error reading contacts:', error);
+    if (error.code === 'ENOENT') {
+      return []; // Dacă fișierul nu există, returnează un array gol
+    }
+    throw error; // Aruncă orice altă eroare
+  }
+};
 
 const getContactById = async (contactId) => {
   const contacts = await listContacts()
