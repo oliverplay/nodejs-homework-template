@@ -1,18 +1,10 @@
+const authenticate = require('../../middlewares/auth');
 const express = require('express');
 const Joi = require('joi');
-
-const {
-  listContacts,
-  getContactById,
-  addContact,
-  removeContact,
-  updateContact,
-  updateFavorite,
-} = require('../../models/contacts');
-
+const Contact = require('../../models/contacts');
 const router = express.Router();
 
-// Validation schema
+// Validation schemas
 const contactSchema = Joi.object({
   name: Joi.string().required(),
   email: Joi.string().email().required(),
@@ -23,84 +15,47 @@ const favoriteSchema = Joi.object({
   favorite: Joi.boolean().required(),
 });
 
-router.get('/', async (req, res, next) => {
+// GET All Contacts (Paginated)
+router.get('/', authenticate, async (req, res, next) => {
   try {
-    const contacts = await listContacts();
-    res.status(200).json(contacts);
+    const { page = 1, limit = 10 } = req.query;
+    const skip = (page - 1) * limit;
+
+    const contacts = await Contact.find({ owner: req.user._id })
+      .skip(skip)
+      .limit(parseInt(limit, 10));
+    const total = await Contact.countDocuments({ owner: req.user._id });
+
+    res.status(200).json({
+      contacts,
+      page: parseInt(page, 10),
+      limit: parseInt(limit, 10),
+      totalPages: Math.ceil(total / limit),
+      totalContacts: total,
+    });
   } catch (error) {
     next(error);
   }
 });
 
-router.get('/:contactId', async (req, res, next) => {
+// POST Create new Contact
+router.post('/', authenticate, async (req, res, next) => {
   try {
-    const { contactId } = req.params;
-    const contact = await getContactById(contactId);
-    if (!contact) {
-      return res.status(404).json({ message: 'Not found' });
-    }
-    res.status(200).json(contact);
-  } catch (error) {
-    next(error);
-  }
-});
+    // Validate request body
+    const { name, email, phone } = await contactSchema.validateAsync(req.body);
 
-router.post('/', async (req, res, next) => {
-  try {
-    const { error } = contactSchema.validate(req.body);
-    if (error) {
-      return res.status(400).json({ message: 'missing required name field' });
-    }
-    const newContact = await addContact(req.body);
-    res.status(201).json(newContact);
-  } catch (error) {
-    next(error);
-  }
-});
+    // Create a new contact
+    const newContact = new Contact({
+      name,
+      email,
+      phone,
+      owner: req.user._id, // assuming the user is authenticated and assigned via the 'auth' middleware
+    });
 
-router.delete('/:contactId', async (req, res, next) => {
-  try {
-    const { contactId } = req.params;
-    const contact = await removeContact(contactId);
-    if (!contact) {
-      return res.status(404).json({ message: 'Not found' });
-    }
-    res.status(200).json({ message: 'contact deleted' });
-  } catch (error) {
-    next(error);
-  }
-});
+    // Save the new contact to the database
+    await newContact.save();
 
-router.put('/:contactId', async (req, res, next) => {
-  try {
-    const { contactId } = req.params;
-    const { error } = contactSchema.validate(req.body);
-    if (error) {
-      return res.status(400).json({ message: 'missing fields' });
-    }
-    const updatedContact = await updateContact(contactId, req.body);
-    if (!updatedContact) {
-      return res.status(404).json({ message: 'Not found' });
-    }
-    res.status(200).json(updatedContact);
-  } catch (error) {
-    next(error);
-  }
-});
-
-// PATCH route for updating favorite status
-router.patch('/:contactId/favorite', async (req, res, next) => {
-  try {
-    const { contactId } = req.params;
-    const { error } = favoriteSchema.validate(req.body);
-    if (error) {
-      return res.status(400).json({ message: 'missing field favorite' });
-    }
-    const updatedContact = await updateFavorite(contactId, req.body.favorite);
-    if (!updatedContact) {
-      return res.status(404).json({ message: 'Not found' });
-    }
-    res.status(200).json(updatedContact);
+    res.status(201).json(newContact); // Respond with the created contact
   } catch (error) {
     next(error);
   }
