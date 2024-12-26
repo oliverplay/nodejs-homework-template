@@ -11,9 +11,9 @@ const listContacts = async () => {
   } catch (error) {
     console.error('Error reading contacts:', error);
     if (error.code === 'ENOENT') {
-      return []; // Dacă fișierul nu există, returnează un array gol
+      return []; 
     }
-    throw error; // Aruncă orice altă eroare
+    throw error; 
   }
 };
 
