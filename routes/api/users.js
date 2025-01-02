@@ -2,38 +2,43 @@ const express = require('express');
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcryptjs');
 const Joi = require('joi');
-const authenticate = require('../../middlewares/auth');
 const User = require('../../models/user');
 
-const router = express.Router();
+const router = express.Router(); // Declare the router object
 
-// Validation schemas
+// Validation schema
 const userSchema = Joi.object({
   email: Joi.string().email().required(),
   password: Joi.string().min(6).required(),
 });
 
-// Sign up
-router.post('/signup', async (req, res) => {
+// Login endpoint
+router.post('/login', async (req, res) => {
   try {
+    console.log('Request body:', req.body); // Log the incoming request body
     const { email, password } = await userSchema.validateAsync(req.body);
+    console.log('Validated input:', { email, password }); // Log the validated input
 
-    const existingUser = await User.findOne({ email });
-    if (existingUser) {
-      return res.status(409).json({ message: 'Email in use' });
+    const user = await User.findOne({ email });
+    if (!user || !(await bcrypt.compare(password, user.password))) {
+      console.log('Invalid credentials'); // Log if credentials are invalid
+      return res.status(401).json({ message: 'Email or password is wrong' });
     }
 
-    const hashedPassword = await bcrypt.hash(password, 10);
-    const newUser = await User.create({ email, password: hashedPassword });
+    const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, { expiresIn: '1h' });
+    user.token = token;
+    await user.save();
 
-    return res.status(201).json({
-      user: { email: newUser.email, subscription: newUser.subscription },
+    return res.status(200).json({
+      token,
+      user: { email: user.email, subscription: user.subscription },
     });
   } catch (error) {
+    console.error('Error:', error.message); // Log validation or other errors
     return res.status(400).json({ message: error.message });
   }
 });
-
+//-----------------------
 // Login
 router.post('/login', async (req, res) => {
   try {
@@ -57,22 +62,6 @@ router.post('/login', async (req, res) => {
   }
 });
 
-// Logout
-router.get('/logout', authenticate, async (req, res) => {
-  try {
-    const user = req.user;
-    user.token = null;
-    await user.save();
-    res.status(204).send();
-  } catch (error) {
-    res.status(500).json({ message: error.message });
-  }
-});
+//----------------------
 
-// Get Current User
-router.get('/current', authenticate, (req, res) => {
-  const { email, subscription } = req.user;
-  res.status(200).json({ email, subscription });
-});
-
-module.exports = router;
+module.exports = router; // Export the router object

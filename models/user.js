@@ -10,6 +10,7 @@ const userSchema = new Schema({
     default: 'starter',
   },
   token: { type: String, default: null },
+  avatarURL: { type: String }, // Added avatarURL property
 });
 
 const User = mongoose.model('user', userSchema);
