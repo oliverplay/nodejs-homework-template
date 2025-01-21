@@ -1,18 +1,32 @@
+const express = require("express");
 const mongoose = require("mongoose");
-require("dotenv").config();
-const app = require("./app");
+const cors = require("cors");
+const usersRoutes = require("./routes/api/users");
 
-const DB_HOST = process.env.DB_HOST;
+require("dotenv").config();
+
+const app = express();
+
+app.use(express.json());
+app.use(cors());
+
+app.use("/users", usersRoutes);
+
+app.use((req, res, next) => {
+  res.status(404).json({ message: "Not Found" });
+});
+
+app.use((err, req, res, next) => {
+  console.error(err.stack);
+  res.status(err.status || 500).json({ message: err.message });
+});
 
 mongoose
-  .connect(DB_HOST)
+  .connect(process.env.MONGO_URI)
   .then(() => {
-    console.log("Database connection successful");
-    app.listen(3000, () => {
-      console.log("Server is running. Use our API on port: 3000");
-    });
+    console.log("MongoDB connected successfully");
+    app.listen(3000, () => console.log("Server running on port 3000"));
   })
-  .catch((error) => {
-    console.error("Database connection error:", error.message);
-    process.exit(1);
+  .catch((err) => {
+    console.error("DB connection error:", err);
   });

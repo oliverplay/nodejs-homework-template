@@ -1,25 +1,43 @@
 const express = require("express");
-const logger = require("morgan");
+const mongoose = require("mongoose");
 const cors = require("cors");
-
-const contactsRouter = require("./routes/api/contacts");
+const config = require("./config/config");
+const authRoutes = require("./routes/api/auth"); // Authentication routes
+const contactsRoutes = require("./routes/api/contacts"); // Contacts routes
+const usersRoutes = require("./routes/api/users"); // Users routes
 
 const app = express();
 
-const formatsLogger = app.get("env") === "development" ? "dev" : "short";
-
-app.use(logger(formatsLogger));
-app.use(cors());
+// Middleware
 app.use(express.json());
+app.use(cors());
 
-app.use("/api/contacts", contactsRouter);
+// Routes
+app.use("/users", authRoutes); // Authentication routes
+app.use("/contacts", contactsRoutes); // Contacts routes
+app.use("/users", usersRoutes); // Users management routes
 
-app.use((req, res) => {
-  res.status(404).json({ message: "Not found" });
+// Handle undefined routes
+app.use((req, res, next) => {
+  res.status(404).json({ message: "Not Found" });
 });
 
+// Global error handler
 app.use((err, req, res, next) => {
-  res.status(500).json({ message: err.message });
+  console.error(err.stack); // Log the error for debugging
+  res.status(err.status || 500).json({
+    message: err.message || "Internal Server Error",
+  });
 });
+
+// Connect to MongoDB
+mongoose
+  .connect(config.mongoUri)
+  .then(() => {
+    app.listen(config.port, () => {
+      console.log(`Server running on port ${config.port}`);
+    });
+  })
+  .catch((error) => console.log(error.message));
 
 module.exports = app;
