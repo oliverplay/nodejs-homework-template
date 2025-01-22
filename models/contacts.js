@@ -1,32 +1,26 @@
 const { Schema, model } = require("mongoose");
 
-const contactSchema = new Schema(
-  {
-    name: {
-      type: String,
-      required: true,
-      trim: true,
-      minlength: 2,
-      maxlength: 50,
-    },
-    phone: {
-      type: String,
-      required: true,
-      match: [/^\+?[1-9]\d{1,14}$/, "Invalid phone number format"],
-    },
-    owner: {
-      type: Schema.Types.ObjectId,
-      ref: "User",
-      required: true,
-    },
+const contactSchema = new Schema({
+  name: {
+    type: String,
+    required: [true, "Set name for contact"],
   },
-  {
-    timestamps: true,
-  }
-);
+  email: {
+    type: String,
+  },
+  phone: {
+    type: String,
+  },
+  favorite: {
+    type: Boolean,
+    default: false,
+  },
+  owner: {
+    type: Schema.Types.ObjectId, // ref la utilizator
+    ref: "User", // numele modelului de utilizatori
+  },
+});
 
-contactSchema.index({ name: 1, owner: 1 });
-
-const Contact = model("Contact", contactSchema);
+const Contact = model("contact", contactSchema);
 
 module.exports = Contact;
