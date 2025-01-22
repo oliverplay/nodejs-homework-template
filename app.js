@@ -1,43 +1,36 @@
 const express = require("express");
-const mongoose = require("mongoose");
+const logger = require("morgan");
 const cors = require("cors");
-const config = require("./config/config");
-const authRoutes = require("./routes/api/auth"); // Authentication routes
-const contactsRoutes = require("./routes/api/contacts"); // Contacts routes
-const usersRoutes = require("./routes/api/users"); // Users routes
+const contactsRouter = require("./routes/api/contacts");
+const usersRouter = require("./routes/api/users");
+const auth = require("./middlewares/auth"); // middleware pt autentificare
+const path = require("path");
 
 const app = express();
 
-// Middleware
-app.use(express.json());
+const formatsLogger = app.get("env") === "development" ? "dev" : "short";
+
+// middlewareuri globale
+app.use(logger(formatsLogger));
 app.use(cors());
+app.use(express.json());
 
-// Routes
-app.use("/users", authRoutes); // Authentication routes
-app.use("/contacts", contactsRoutes); // Contacts routes
-app.use("/users", usersRoutes); // Users management routes
+// rute publice (fara autentificare)
+app.use("/api/users", usersRouter);
 
-// Handle undefined routes
-app.use((req, res, next) => {
-  res.status(404).json({ message: "Not Found" });
+// rute protejate (autentificare necesara)
+app.use("/api/contacts", auth, contactsRouter); // adauga autentificarea pt rutele de contacte
+
+// ruta pentru erori 404
+app.use((req, res) => {
+  res.status(404).json({ message: "Not found" });
 });
 
-// Global error handler
+// middleware global pentru gestionarea erorilor
 app.use((err, req, res, next) => {
-  console.error(err.stack); // Log the error for debugging
-  res.status(err.status || 500).json({
-    message: err.message || "Internal Server Error",
-  });
+  res.status(500).json({ message: err.message });
 });
 
-// Connect to MongoDB
-mongoose
-  .connect(config.mongoUri)
-  .then(() => {
-    app.listen(config.port, () => {
-      console.log(`Server running on port ${config.port}`);
-    });
-  })
-  .catch((error) => console.log(error.message));
+app.use("/avatars", express.static(path.join(__dirname, "public/avatars"))); // ruta pt fisierele de avatar
 
 module.exports = app;
