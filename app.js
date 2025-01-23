@@ -1,44 +1,68 @@
-const express = require('express');
-const path = require('path');
-const contactsRouter = require('./routes/api/contacts');
-const usersRouter = require('./routes/api/users');
-const mongoose = require('mongoose');
+import express from 'express';
+import path from 'path';
+import { fileURLToPath } from 'url';
+import mongoose from 'mongoose';
+import dotenv from 'dotenv';
+
+import contactsRouter from './routes/api/contacts.js';
+import usersRouter from './routes/api/users.js';
+import authRouter from './routes/api/auth.js';
+
+dotenv.config(); // Load environment variables
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 // Database connection URI
-const DB_URI = process.env.DB_URI || 'mongodb+srv://sorintene:1234qwer@test-cluster.jnsni.mongodb.net/db-contacts?retryWrites=true&w=majority';
+const DB_URI = process.env.DB_URI;
 
-// Function to establish the database connection
+if (!DB_URI || (!DB_URI.startsWith('mongodb://') && !DB_URI.startsWith('mongodb+srv://'))) {
+  console.error('Invalid or missing DB_URI in environment variables.');
+  process.exit(1);
+}
+
+// Configure Mongoose settings
+mongoose.set('bufferCommands', false); // Disable buffering to prevent unexpected behavior
+
+// MongoDB connection events
+mongoose.connection.on('connecting', () => console.log('Connecting to MongoDB...'));
+mongoose.connection.on('connected', () => console.log('Connected to MongoDB'));
+mongoose.connection.on('error', (err) => console.error('Mongoose connection error:', err.message));
+mongoose.connection.on('disconnected', () => console.log('Mongoose disconnected'));
+
+// Connect to the database
 const connectDB = async () => {
   try {
-    await mongoose.connect(DB_URI);
+    await mongoose.connect(DB_URI); // Remove deprecated options
     console.log('MongoDB connected successfully');
   } catch (err) {
-    console.error('MongoDB connection error:', err.message);
-    process.exit(1); // Exit process if the database connection fails
+    console.error('Failed to connect to MongoDB:', err.message);
+    process.exit(1); // Exit the process if the connection fails
   }
 };
 
 const app = express();
-
-// Middleware for parsing JSON requests
 app.use(express.json());
 
-// Serve static files for avatars
 app.use('/avatars', express.static(path.join(__dirname, 'public/avatars')));
 
-// API routes
+// Log route registration for debugging
+console.log('Registering routes...');
 app.use('/api/contacts', contactsRouter);
+console.log('Contacts route registered at /api/contacts');
+
 app.use('/api/users', usersRouter);
+console.log('Users route registered at /api/users');
+
+app.use('/auth', authRouter);
+console.log('Auth route registered at /auth');
 
 // Middleware for handling 404 errors
-app.use((req, res, next) => {
-  res.status(404).json({ message: 'Not Found' });
-});
+app.use((req, res, next) => res.status(404).json({ message: 'Not Found' }));
 
-// Connect to MongoDB when not in test mode
+// Connect to MongoDB
 if (process.env.NODE_ENV !== 'test') {
   connectDB();
 }
 
-// Export the app instance for use in server.js and tests
-module.exports = { app, connectDB };
+export { app, connectDB };

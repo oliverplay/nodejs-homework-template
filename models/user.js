@@ -1,18 +1,29 @@
-const mongoose = require('mongoose');
-const { Schema } = mongoose;
+import mongoose from 'mongoose';
+import { nanoid } from 'nanoid';
 
-const userSchema = new Schema({
-  password: { type: String, required: [true, 'Password is required'] },
-  email: { type: String, required: [true, 'Email is required'], unique: true },
-  subscription: {
+const userSchema = new mongoose.Schema({
+  email: {
     type: String,
-    enum: ['starter', 'pro', 'business'],
-    default: 'starter',
+    required: true,
+    unique: true,
   },
-  token: { type: String, default: null },
-  avatarURL: { type: String }, // Added avatarURL property
+  password: {
+    type: String,
+    required: true,
+  },
+  verify: {
+    type: Boolean,
+    default: false,
+  },
+  verificationToken: {
+    type: String,
+    default: null, // Allow null values
+    required: function () {
+      return !this.verify; // Required only if the user is not verified
+    },
+  },
 });
 
-const User = mongoose.model('user', userSchema);
+const User = mongoose.model('User', userSchema);
 
-module.exports = User;
+export default User;

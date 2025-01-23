@@ -1,7 +1,8 @@
-const authenticate = require('../../middlewares/auth');
-const express = require('express');
-const Joi = require('joi');
-const Contact = require('../../models/contacts');
+import express from 'express';
+import authenticate from '../../middlewares/auth.js';
+import Joi from 'joi';
+import Contact from '../../models/contacts.js';
+
 const router = express.Router();
 
 // Validation schemas
@@ -61,4 +62,4 @@ router.post('/', authenticate, async (req, res, next) => {
   }
 });
 
-module.exports = router;
+export default router;
