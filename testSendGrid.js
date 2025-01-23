@@ -1,6 +1,6 @@
 import sgMail from '@sendgrid/mail';
 
-sgMail.setApiKey('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'); // Replace with your API key
+sgMail.setApiKey('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'); // Replace with your API key
 
 const msg = {
   to: 'test@example.com', // Replace with your recipient email
