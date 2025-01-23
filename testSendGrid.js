@@ -1,6 +1,8 @@
 import sgMail from '@sendgrid/mail';
 
-sgMail.setApiKey('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'); // Replace with your API key
+require('dotenv').config();
+const sgMail = require('@sendgrid/mail');
+sgMail.setApiKey(process.env.SENDGRID_API_KEY);
 
 const msg = {
   to: 'test@example.com', // Replace with your recipient email
