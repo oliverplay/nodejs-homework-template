@@ -1,5 +1,16 @@
-const app = require("./app");
+import dotenv from 'dotenv';
+dotenv.config();
 
-app.listen(3000, () => {
-  console.log("Server is running. Use our API on port: 3000");
+import { app, connectDB } from './app.js'; // Import the app instance and database connection function
+
+const PORT = process.env.PORT || 3000;
+
+// Start the server
+app.listen(PORT, () => {
+  console.log(`Server is running on port ${PORT}`);
 });
+
+// Ensure MongoDB connection is established
+if (process.env.NODE_ENV !== 'test') {
+  connectDB();
+}
