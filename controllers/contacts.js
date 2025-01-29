@@ -1,92 +1,57 @@
 const Contact = require("../models/contact");
 
 //GET /api/contacts
-const listContacts = async (req, res, next) => {
-	try {
-		const contacts = await Contact.find();
-		res.status(200).json(contacts);
-	} catch (error) {
-		next(error);
-	}
+const listContacts = async (page, limit, filter) => {
+	const contacts = await Contact.find({ ...filter })
+		.skip((page - 1) * limit)
+		.limit(limit)
+		.exec();
+	const totalContacts = await Contact.countDocuments({ ...filter });
+	return {
+		totalContacts,
+		totalPages: Math.ceil(totalContacts / limit),
+		page,
+		limit,
+		contacts,
+	};
 };
 
 //GET /api/contacts/:id
-const getContactById = async (req, res, next) => {
-	try {
-		const { id } = req.params;
-		const contact = await Contact.findById(id);
-		if (!contact) {
-			return res.status(404).json({ message: "Contact not found ^_^" });
-		}
-		res.status(200).json(contact);
-	} catch (error) {
-		next(error);
-	}
+const getContactById = async (req, res) => {
+	const contact = await Contact.findById(req.params.id);
+	if (!contact) return res.status(404).json({ message: "Contact not found" });
+	res.status(200).json(contact);
 };
 
 //POST /api/contacts
-const addContact = async (req, res, next) => {
-	try {
-		const { name, email, phone } = req.body;
-		if (!name || !email || !phone) {
-			return res.status(400).json({ message: "Missing required fields!^_^" });
-		}
-		const newContact = new Contact({ name, email, phone });
-		await newContact.save();
-		res.status(201).json(newContact);
-	} catch (error) {
-		next(error);
-	}
+const addContact = async (req, res) => {
+	const { name, email, phone, favorite } = req.body;
+	const contact = new Contact({ name, email, phone, favorite, owner: req.user._id });
+	await contact.save();
+	res.status(201).json(contact);
 };
 
 //DELETE /api/contacts/:id
-const removeContact = async (req, res, next) => {
-	try {
-		const { id } = req.params;
-		const contact = await Contact.findByIdAndDelete(id);
-		if (!contact) {
-			return res.status(404).json({ message: "Contact not found ^_^" });
-		}
-		res.status(200).json({ message: "Contact deleted ^_^" });
-	} catch (error) {
-		next(error);
-	}
+const removeContact = async (req, res) => {
+	const contact = await Contact.findByIdAndDelete(req.params.id);
+	if (!contact) return res.status(404).json({ message: "Contact not found" });
+	res.status(200).json({ message: "Contact deleted" });
 };
 
 //PUT /api/contacts/:id
-const updateContact = async (req, res, next) => {
-	try {
-		const { id } = req.params;
-		const updateData = req.body;
-		if (!Object.keys(updateData).length) {
-			return res.status(400).json({ message: "Missing fileds! ^_^" });
-		}
-		const contact = await Contact.findByIdAndUpdate(id, updateData, { new: true });
-		if (!contact) {
-			res.status(404).json({ message: "Contact not found ^_^" });
-		}
-		res.status(200).json(contact);
-	} catch (error) {
-		next(error);
-	}
+const updateContact = async (req, res) => {
+	const contact = await Contact.findByIdAndUpdate(req.params.id, req.body, { new: true });
+	if (!contact) return res.status(404).json({ message: "Contact not found" });
+	res.status(200).json(contact);
 };
 
 //PATCH /api/contacts/:id/favorite
-const updateFavorite = async (req, res, next) => {
-	try {
-		const { id } = req.params;
-		const { favorite } = req.body;
-		if (typeof favorite !== "boolean") {
-			return res.status(400).json({ message: "Missing field favorite! ^_^" });
-		}
-		const contact = await Contact.findByIdAndUpdate(id, { favorite }, { new: true });
-		if (!contact) {
-			return res.status(404).json | { message: "Contact not found ^_^" };
-		}
-		res.status(200).json(contact);
-	} catch (error) {
-		next(error);
-	}
+const updateFavorite = async (req, res) => {
+	const contact = await Contact.findById(req.params.id);
+	if (!contact) return res.status(404).json({ message: "Contact not found" });
+	contact.favorite = !contact.favorite;
+	await contact.save();
+	res.status(200).json(contact);
 };
 
 module.exports = {
