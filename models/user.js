@@ -16,23 +16,24 @@ const userSchema = new mongoose.Schema({
     enum: ["starter", "pro", "business"],
     default: "starter",
   },
-  token: {
-    type: String,
-    default: null,
-  },
   avatarURL: {
     type: String,
     required: false,
   },
+  token: {
+    type: String,
+    default: null,
+  },
 });
 
-userSchema.pre("save", async function (next) {
-  if (!this.isModified("password")) return next();
-  const salt = await bcrypt.genSalt(10);
-  this.password = await bcrypt.hash(this.password, salt);
-  next();
-});
+userSchema.methods.setPassword = function (password) {
+  this.password = bcrypt.hashSync(password, bcrypt.genSaltSync(10));
+};
 
-const User = mongoose.model("user", userSchema);
+userSchema.methods.comparePassword = function (password) {
+  return bcrypt.compareSync(password, this.password);
+};
+
+const User = mongoose.model("User", userSchema);
 
 module.exports = User;
