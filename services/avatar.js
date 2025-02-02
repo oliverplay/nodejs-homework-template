@@ -16,9 +16,12 @@ const storage = multer.diskStorage({
 const upload = multer({ storage: storage });
 
 const processAvatar = async (filePath) => {
-  const image = await Jimp.read(filePath);
-  await image.resize(250, 250); // Redimensionare la 250x250
-  await image.writeAsync(filePath);
+  try {
+    const image = await Jimp.read(filePath);
+    await image.resize(250, 250).writeAsync(filePath);
+  } catch (error) {
+    throw new Error("Failed to process avatar with Jimp");
+  }
 };
 
 const moveAvatar = async (filePath, fileName) => {

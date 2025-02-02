@@ -1,6 +1,5 @@
 const User = require("../models/user");
 const { processAvatar, moveAvatar } = require("../services/avatar");
-const authMiddleware = require("../middlewares/auth");
 
 const updateAvatar = async (req, res) => {
   try {
