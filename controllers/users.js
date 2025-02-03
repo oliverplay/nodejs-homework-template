@@ -23,6 +23,28 @@ const updateAvatar = async (req, res) => {
   }
 };
 
+const getCurrentUser = (req, res) => {
+  res.status(200).json({
+    email: req.user.email,
+    subscription: req.user.subscription,
+  });
+};
+
+const updateSubscription = async (req, res) => {
+  const { subscription } = req.body;
+  if (!["starter", "pro", "business"].includes(subscription)) {
+    return res.status(400).json({ message: "Invalid subscription type ^_^" });
+  }
+  req.user.subscription = subscription;
+  await req.user.save();
+  res.status(200).json({
+    email: req.user.email,
+    subscription: req.user.subscription,
+  });
+};
+
 module.exports = {
   updateAvatar,
+  getCurrentUser,
+  updateSubscription,
 };
