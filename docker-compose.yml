@@ -1,0 +1,18 @@
+version: "3.8"
+services:
+  app:
+    build: .
+    ports:
+      - "3000:3000"
+    environment:
+      - DB_HOST="mongodb+srv://naomimariuta:123456Xcvbnm!@cluster0.zftuw.mongodb.net/contacts"
+      - JWT_SECRET="by4ZwjRVh4N0X9+A37K9Xv8DGrzHuKuyDrOESxtqbm8="
+      - SENDGRID_API_KEY=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
+      - EMAIL_SENDER=naomimariuta@gmail.com
+    depends_on:
+      - mongo
+
+  mongo:
+    image: mongo
+    ports:
+      - "27017:27017"

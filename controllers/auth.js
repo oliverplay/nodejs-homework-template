@@ -2,10 +2,8 @@ require("dotenv").config();
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const User = require("../models/user");
-const { nanoid } = require("nanoid");
-const sgMail = require("@sendgrid/mail");
-
-sgMail.setApiKey(process.env.SENDGRID_API_KEY);
+const { v4: uuidv4 } = require("uuid");
+const { sendVerificationEmail } = require("../services/email");
 
 // POST /users/login
 const login = async (req, res) => {
@@ -53,23 +51,15 @@ const signup = async (req, res) => {
   if (existingUser)
     return res.status(409).json({ message: "Email in use ^_^" });
 
-  const verificationToken = nanoid();
+  const verificationToken = uuidv4();
 
   const user = new User({ email, password, verificationToken });
   await user.save();
 
-  const msg = {
-    to: email,
-    from: process.env.SENDER_EMAIL,
-    subject: "Verify your email",
-    html: `<p>Click <a href="${process.env.BASE_URL}/users/verify/${verificationToken}">here</a> to verify your email.</p>`,
-  };
-
-  await sgMail.send(msg);
+  await sendVerificationEmail(email, verificationToken);
 
   res.status(201).json({
-    // Schimbă .send() cu .json()
-    message: "User created successfully ^_^", // Adaugă un mesaj pentru succes
+    message: "User created successfully ^_^",
     user: {
       email: user.email,
       subscription: user.subscription,
@@ -107,11 +97,15 @@ const verifyEmail = async (req, res) => {
     verificationToken: null,
   });
 
-  res.json({ message: "Verification successful" });
+  res.status(200).json({ message: "Verification successful" });
 };
 
 const resendVerificationEmail = async (req, res) => {
   const { email } = req.body;
+  if (!email) {
+    return res.status(400).json({ message: "missing required field email" });
+  }
+
   const user = await User.findOne({ email });
 
   if (!user) {
@@ -122,14 +116,8 @@ const resendVerificationEmail = async (req, res) => {
     return res.status(400).json({ message: "Verification already done ^_^" });
   }
 
-  const msg = {
-    to: email,
-    from: process.env.SENDER_EMAIL,
-    subject: "Verify you email",
-    html: `<p>Click <a href="${process.env.BASE_URL}/users/verify/${user.verificationToken}">here</a> to verify your email.</p>`,
-  };
+  await sendVerificationEmail(user.email, user.verificationToken);
 
-  await sgMail.send(msg);
   res.status(200).json({ message: "Verification email sent ^_^" });
 };
 
