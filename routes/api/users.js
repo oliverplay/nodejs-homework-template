@@ -6,25 +6,37 @@ const {
   getCurrentUser,
   updateSubscription,
 } = require("../../controllers/users");
-const { signup, login, logout } = require("../../controllers/auth");
+const {
+  signup,
+  login,
+  logout,
+  verifyEmail,
+  resendVerificationEmail,
+} = require("../../controllers/auth");
 const router = express.Router();
 
-//SIGNUP
+// SIGNUP
 router.post("/signup", signup);
 
-//LOGIN
+// LOGIN
 router.post("/login", login);
 
-//LOGOUT
+// LOGOUT
 router.get("/logout", authMiddleware, logout);
 
-//PATCH avatar
+// PATCH avatar
 router.patch("/avatars", authMiddleware, upload.single("avatar"), updateAvatar);
 
-//GET /users/current
+// GET /users/current
 router.get("/current", authMiddleware, getCurrentUser);
 
-//PATCH subscription
+// PATCH subscription
 router.patch("/", authMiddleware, updateSubscription);
+
+// GET verificationToken
+router.get("/verify/:verificationToken", verifyEmail);
+
+// POST verification
+router.post("/verify", resendVerificationEmail);
 
 module.exports = router;
