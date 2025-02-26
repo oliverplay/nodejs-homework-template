@@ -1,5 +1,5 @@
 # Folosește o imagine oficială Node.js ca bază
-FROM node:14
+FROM node:20
 
 # Setează directorul de lucru
 WORKDIR /app
@@ -14,7 +14,7 @@ RUN npm install
 COPY . .
 
 # Expune portul 3000
-EXPOSE 3000
+EXPOSE 3001
 
 # Comanda de start
 CMD ["node", "server.js"]
